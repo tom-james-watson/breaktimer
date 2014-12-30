@@ -1,0 +1,67 @@
+/* Include this file in your html if you are using the CSP mode. */
+
+@charset "UTF-8";
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak],
+.ng-cloak, .x-ng-cloak,
+.ng-hide {
+    display: none !important;
+}
+
+ng\:form {
+    display: block;
+}
+
+body {
+    background-color: #eee;
+    font-family: 'Actor', sans-serif;
+    color: #444;
+}
+
+.spacer {
+    margin-top: 50px;
+}
+
+.center {
+    text-align: center;
+}
+
+#countdown {
+    margin-bottom: 50px;
+}
+
+#countdown h1 {
+    font-size: 4em;
+}
+
+#countdown h2 {
+    font-size: 1em;
+}
+
+#countdown .time-unit {
+    font-size: 0.25em;
+}
+
+@font-face {
+    font-family: 'Actor';
+    src: url('chrome-extension://__MSG_@@extension_id__/fonts/DroidSansMono.ttf');
+}
+
+.actionbar {
+    position: absolute;
+    bottom: 0.5em;
+    right: 1.0em;
+}
+
+.actionbar a {
+    font-size: 3rem;
+    color: #000;
+    text-decoration: none;
+}
+
+.typeahead ul {
+    max-height: 150px;
+    border: 1px solid #333;
+    padding: 3px;
+    overflow: auto;
+}

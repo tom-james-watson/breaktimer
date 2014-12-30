@@ -1,0 +1,36 @@
+<div>
+    <div>
+        <div ng-show="alarm.alarm">
+            <h3>Next break in:</h3>
+            <div id="countdown" class="center">
+                <h1 ng-show="countdown">
+                    {{ countdown.hours | digits:2 }}<span class="time-unit">h</span>:
+                    {{ countdown.minutes | digits:2 }}<span class="time-unit">m</span>:
+                    {{ countdown.seconds | digits:2 }}<span class="time-unit">s</span>
+                </h1>
+                <h1 ng-hide="countdown">
+                    ...
+                </h1>
+            </div>
+            <div class="spacer"></div>
+            <div class="center">
+                <button type="button" class="btn btn-danger" ng-click="toggleBreaksOn()">
+                    Disable Breaks
+                </button>
+            </div>
+        </div>
+
+        <div ng-hide="alarm.alarm">
+            <h3>Breaks currently disabled</h3>
+            <div class="spacer"></div>
+            <div class="center">
+                <button type="button" class="btn btn-success" ng-click="toggleBreaksOn()">
+                    Enable Breaks
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="actionbar">
+        <a class="glyphicon glyphicon-cog" href="#/settings"></a>
+    </div>
+</div>
