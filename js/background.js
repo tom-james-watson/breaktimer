@@ -12,6 +12,10 @@ function launch() {
         {
             id: 'main',
             outerBounds: { width: 480, height: 300 },
+            //frame: {
+            //    type: 'chrome',
+            //    color: '#444'
+            //},
             //frame: 'none', TODO - add draggable frame
             // alphaEnabled: false - TODO - revisit (experimental feature)
         }

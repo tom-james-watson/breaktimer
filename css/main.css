@@ -39,7 +39,7 @@ body {
 }
 
 #countdown .time-unit {
-    font-size: 0.25em;
+    font-size: 24px;
 }
 
 @font-face {
