@@ -1,8 +1,8 @@
 var notificationId;
 var config = {};
 var defaults = {
-    frequency: 20,
-    length: 0.1
+    frequency: 28,
+    length: 2
 };
 var alarmName = 'breakAlarm';
 
@@ -18,29 +18,45 @@ function launch() {
             //},
             //frame: 'none', TODO - add draggable frame
             // alphaEnabled: false - TODO - revisit (experimental feature)
+        },
+        function(popupWindow) {
+            popupWindow.contentWindow.config = config;
         }
     );
 }
 
 function handleAlarm() {
     // Now create the notification
-    chrome.notifications.create('reminder', {
-        type: 'basic',
-        iconUrl: 'image/icon128.png',
-        title: 'Don\'t forget!',
-        message: 'Take a break, mate.'
-    }, function(newNotificationId) {
-        notificationId = newNotificationId;
-    });
+    //chrome.notifications.create('reminder', {
+    //    type: 'basic',
+    //    iconUrl: 'image/icon128.png',
+    //    title: 'Don\'t forget!',
+    //    message: 'Take a break, mate.'
+    //}, function(newNotificationId) {
+    //    notificationId = newNotificationId;
+    //});
 
     // Clear notification after 5 seconds
-    setTimeout(function() {
-        console.log(notificationId)
-        chrome.notifications.clear(notificationId, function() {});
-    }, 5000);
+    //setTimeout(function() {
+    //    chrome.notifications.clear(notificationId, function() {});
+    //}, 5000);
+
+    var x = chrome.app.window.create(
+        '../templates/break.html',
+        {
+            id: 'break',
+            state: 'fullscreen',
+        },
+        function(breakWindow) {
+            breakWindow.contentWindow.config = config;
+            breakWindow.onClosed.addListener(function() {
+                createAlarm();
+            });
+        }
+    );
 
     // Create the next alarm
-    createAlarm();
+    //createAlarm();
 }
 
 // When the user clicks on the notification, we want to TODO
@@ -53,10 +69,9 @@ chrome.app.runtime.onLaunched.addListener(launch);
 
 chrome.alarms.onAlarm.addListener(handleAlarm);
 
-function createAlarm(minutes) {
-    console.log('createAlarm');
+function createAlarm() {
     chrome.alarms.create(alarmName, {
-        delayInMinutes: Number(config.length)
+        delayInMinutes: Number(config.frequency)
     });
     chrome.alarms.get(alarmName, function(alarm) {
         chrome.runtime.sendMessage({
@@ -68,9 +83,13 @@ function createAlarm(minutes) {
 
 function setConfig(newConfig) {
     config = newConfig;
+    chrome.storage.local.set({
+        config: newConfig
+    });
     createAlarm();
 }
 
+// Handle runtime messages from other pages in the app
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         switch (request.event) {
@@ -83,10 +102,19 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
+// Grab config from local storage or take defaults
 chrome.storage.local.get('config', function(data) {
-    if ('length' in data.config && 'frequency' in data.config) {
-        setConfig(data.config);
-    } else {
+    if (typeof(data.config) === 'undefined') {
         setConfig(defaults);
+    } else {
+        setConfig(data.config);
     }
 });
+
+// Listen for changes to local storage config
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    if (namespace === 'local' && 'config' in changes) {
+        setConfig(changes.config.newValue);
+    }
+});
+

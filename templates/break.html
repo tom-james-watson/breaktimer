@@ -1,0 +1,44 @@
+<!doctype html>
+<html data-ng-app="myApp" data-ng-csp="">
+    <head>
+        <meta charset="UTF-8">
+        <title>Break Time</title>
+        <link rel="stylesheet" href="../css/bootstrap.min.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body>
+        <div class="container">
+            <div data-ng-controller="BreakCtrl">
+                <div>
+                    <h3>Time for a break!</h3>
+                    <div id="countdown" class="center">
+                        <h1 ng-show="countdown">
+                            {{ countdown.hours | digits:2 }}<span class="time-unit">h</span>:
+                            {{ countdown.minutes | digits:2 }}<span class="time-unit">m</span>:
+                            {{ countdown.seconds | digits:2 }}<span class="time-unit">s</span>
+                        </h1>
+                        <h1 ng-hide="countdown">
+                            ...
+                        </h1>
+                    </div>
+                    <div class="spacer"></div>
+                    <div class="center">
+                        <button type="button" class="btn btn-success" ng-click="skip()">
+                            Skip
+                        </button>
+                    </div>
+                    <div class="spacer"></div>
+                    <div>
+                        Rest your eyes. Stretch your legs. Breathe. Relax.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="../js/vendor/angular.min.js"></script>
+        <script src="../js/vendor/angular-route.min.js"></script>
+        <script src="../js/vendor/moment.min.js"></script>
+        <script src="../js/vendor/countdown.min.js"></script>
+        <script src="../js/vendor/moment-countdown.min.js"></script>
+        <script src="../js/break.js"></script>
+    </body>
+</html>

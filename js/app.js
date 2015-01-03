@@ -6,7 +6,6 @@ angular.module('myApp', ['ngRoute'])
         function(request) {
             switch (request.event) {
                 case 'alarmCreated':
-                    console.log('alarmCreated', request.alarm);
                     $rootScope.$apply(function() {
                         service.alarm = request.alarm;
                     });
@@ -15,13 +14,8 @@ angular.module('myApp', ['ngRoute'])
     );
 
     var service = {
-        alarm: {},
-        checkAlarm: function(callback) {
-            chrome.alarms.get(alarmName, function(alarm) {
-                service.alarm = alarm;
-            });
-        },
-        createAlarm: function(minutes) {
+        alarm: null,
+        createAlarm: function() {
             chrome.runtime.sendMessage({
                 event: "createAlarm"
             }, function(response) {});
@@ -36,43 +30,17 @@ angular.module('myApp', ['ngRoute'])
     });
     return service;
 }])
-.factory('BreakService', ['$rootScope', 'AlarmService', function($rootScope, AlarmService) {
-    var defaults = {
-        frequency: 20,
-        length: 0.1
-    };
-
+.factory('ConfigService', ['$rootScope', 'AlarmService', function($rootScope, AlarmService) {
     var service = {
-        config: {},
+        config: angular.copy(window.config),
         save: function() {
+            AlarmService.cancelAlarm();
             chrome.runtime.sendMessage({
                 event: "setConfig",
                 config: service.config
-            }, function() {
-                AlarmService.cancelAlarm();
-                AlarmService.createAlarm(service.config.frequency);
-                console.log('setting', service.config);
-                chrome.storage.local.set({
-                    config: service.config
-                });
-            });
+            }, function() {});
         },
-        restore: function() {
-            chrome.storage.local.get('config', function(data) {
-                $rootScope.$apply(function() {
-                    console.log(data.config);
-                    if ('length' in data.config && 'frequency' in data.config) {
-                        console.log('yeah newCOnfig');
-                        service.config = data.config;
-                    } else {
-                        console.log('nope defaults');
-                        service.config = defaults;
-                    }
-                });
-            });
-        }
     };
-    service.restore();
     return service;
 }])
 .config(['$routeProvider', function($routeProvider) {
@@ -88,27 +56,32 @@ angular.module('myApp', ['ngRoute'])
         .otherwise({redirectTo: '/'});
 }])
 .controller('MainCtrl',
-    function($scope, $timeout, BreakService, AlarmService) {
+    function($scope, $timeout, AlarmService) {
         $scope.countdown = null;
         $scope.alarm = AlarmService;
-        $scope.config = BreakService.config;
 
         $scope.toggleBreaksOn = function() {
             if ($scope.alarm.alarm) {
                 AlarmService.cancelAlarm();
             } else {
-                AlarmService.createAlarm(BreakService.config.length);
+                AlarmService.createAlarm();
             }
         };
 
         var updateCountdown = function() {
             if ($scope.alarm.alarm) {
-                $scope.countdown = moment(
-                    $scope.alarm.alarm.scheduledTime
-                ).countdown(
-                    moment(),
-                    countdown.HOURS|countdown.MINUTES|countdown.SECONDS
-                );
+                now = moment();
+                if (now > $scope.alarm.alarm.scheduledTime) {
+                    $timeout(updateCountdown, 1000);
+                    return;
+                } else {
+                    $scope.countdown = moment(
+                        $scope.alarm.alarm.scheduledTime
+                    ).countdown(
+                        now,
+                        countdown.HOURS|countdown.MINUTES|countdown.SECONDS
+                    );
+                }
             }
             $timeout(updateCountdown, 1000);
         };
@@ -116,18 +89,17 @@ angular.module('myApp', ['ngRoute'])
         updateCountdown();
 })
 .controller('SettingsCtrl',
-    function($scope, $location, BreakService, AlarmService) {
-        $scope.config = angular.copy(BreakService.config);
+    function($scope, $location, ConfigService, AlarmService) {
+        $scope.config = angular.copy(ConfigService.config);
 
         $scope.save = function() {
-            console.log('scope.save()');
-            BreakService.config = $scope.config;
-            BreakService.save();
+            ConfigService.config = angular.copy($scope.config);
+            ConfigService.save();
             $location.path('/');
         };
 
         $scope.cancel = function() {
-            $scope.config = angular.copy(BreakService.config);
+            $scope.config = angular.copy(ConfigService.config);
             $location.path('/');
         };
 })
