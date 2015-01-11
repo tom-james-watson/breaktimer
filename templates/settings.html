@@ -2,16 +2,25 @@
 
 <form ng-submit="save()">
     <div class="form-group">
+        <label for="break-frequency">Notify me with</label>
+        <select
+            class="form-control"
+            ng-options="item as item.name for item in values track by item.id"
+            ng-model="selected"
+            ng-change="selectNotify()"
+        ></select>
+    </div>
+    <div class="form-group">
         <label for="break-frequency">Break Frequency</label>
         <input type="text" id="break-frequency" class="form-control"
             ng-model="config.frequency" placeholder="Enter a break frequency" />
     </div>
-    <div class="form-group">
+    <div class="form-group" ng-show="config.notificationType === 'F'">
         <label for="break-frequency">Break Length</label>
         <input type="text" id="break-length" class="form-control"
             ng-model="config.length" placeholder="Enter a break length" />
     </div>
-    <input class="btn btn-success" type="submit" value="Save" />
+    <input class="btn btn-primary" type="submit" value="Save" />
     <button class="btn" type="button" value="Cancel" ng-click="cancel()" />
         Cancel
     </button>

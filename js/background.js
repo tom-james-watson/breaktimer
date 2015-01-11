@@ -2,66 +2,69 @@ var notificationId;
 var config = {};
 var defaults = {
     frequency: 28,
-    length: 2
+    length: 2,
+    notificationType: 'N'
 };
 var alarmName = 'breakAlarm';
 
 function launch() {
-    chrome.app.window.create(
-        '../templates/popup.html',
-        {
-            id: 'main',
-            outerBounds: { width: 480, height: 300 },
-            //frame: {
-            //    type: 'chrome',
-            //    color: '#444'
-            //},
-            //frame: 'none', TODO - add draggable frame
-            // alphaEnabled: false - TODO - revisit (experimental feature)
-        },
-        function(popupWindow) {
-            popupWindow.contentWindow.config = config;
-        }
-    );
+    chrome.alarms.get(alarmName, function(alarm) {
+        chrome.app.window.create(
+            '../templates/popup.html',
+            {
+                id: 'main',
+                outerBounds: { width: 480, height: 300 },
+                //frame: 'none', TODO - add draggable frame
+            },
+            function(popupWindow) {
+                popupWindow.contentWindow.config = config;
+                popupWindow.contentWindow.alarm = alarm;
+            }
+        );
+    });
 }
 
 function handleAlarm() {
-    // Now create the notification
-    //chrome.notifications.create('reminder', {
-    //    type: 'basic',
-    //    iconUrl: 'image/icon128.png',
-    //    title: 'Don\'t forget!',
-    //    message: 'Take a break, mate.'
-    //}, function(newNotificationId) {
-    //    notificationId = newNotificationId;
-    //});
 
-    // Clear notification after 5 seconds
-    //setTimeout(function() {
-    //    chrome.notifications.clear(notificationId, function() {});
-    //}, 5000);
+    if (config.notificationType === 'N') {
+        // Create the notification
+        chrome.notifications.create('reminder', {
+            type: 'basic',
+            iconUrl: 'image/icon128.png',
+            title: 'Time for a break!',
+            message: 'Rest your eyes. Stretch your legs. Breathe. Relax.'
+        }, function(newNotificationId) {
+            notificationId = newNotificationId;
+        });
 
-    var x = chrome.app.window.create(
-        '../templates/break.html',
-        {
-            id: 'break',
-            state: 'fullscreen',
-        },
-        function(breakWindow) {
-            breakWindow.contentWindow.config = config;
-            breakWindow.onClosed.addListener(function() {
-                createAlarm();
-            });
-        }
-    );
+        // Create the next alarm
+        createAlarm();
 
-    // Create the next alarm
-    //createAlarm();
+        // Clear notification after 5 seconds
+        setTimeout(function() {
+            chrome.notifications.clear(notificationId, function() {});
+        }, 8000);
+    } else if (config.notificationType === 'F') {
+        // Open the fullscreen break popup
+        chrome.app.window.create(
+            '../templates/break.html',
+            {
+                id: 'break',
+                state: 'fullscreen',
+            },
+            function(breakWindow) {
+                breakWindow.contentWindow.config = config;
+                breakWindow.onClosed.addListener(function() {
+                    createAlarm();
+                });
+            }
+        );
+    }
+
 }
 
-// When the user clicks on the notification, we want to TODO
+// When the user clicks on the notification, close it
 chrome.notifications.onClicked.addListener(function() {
-    launch();
     chrome.notifications.clear(notificationId, function() {});
 });
 

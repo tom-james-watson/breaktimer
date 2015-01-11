@@ -14,7 +14,7 @@ angular.module('myApp', ['ngRoute'])
     );
 
     var service = {
-        alarm: null,
+        alarm: angular.copy(window.alarm),
         createAlarm: function() {
             chrome.runtime.sendMessage({
                 event: "createAlarm"
@@ -25,9 +25,6 @@ angular.module('myApp', ['ngRoute'])
             service.alarm = null;
         }
     };
-    chrome.alarms.get(alarmName, function(alarm) {
-        service.alarm = alarm;
-    });
     return service;
 }])
 .factory('ConfigService', ['$rootScope', 'AlarmService', function($rootScope, AlarmService) {
@@ -101,6 +98,26 @@ angular.module('myApp', ['ngRoute'])
         $scope.cancel = function() {
             $scope.config = angular.copy(ConfigService.config);
             $location.path('/');
+        };
+
+        $scope.values = [{
+            id: 1,
+            name: 'Notification',
+            value: 'N'
+        }, {
+            id: 2,
+            name: 'Fullscreen popup',
+            value: 'F'
+        }];
+
+        for (var i=0; i < $scope.values.length; i++) {
+            if ($scope.values[i].value === $scope.config.notificationType) {
+                $scope.selected = $scope.values[i];
+            }
+        }
+
+        $scope.selectNotify = function() {
+            $scope.config.notificationType = $scope.selected.value;
         };
 })
 .filter('digits',
