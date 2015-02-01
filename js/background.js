@@ -7,14 +7,27 @@ var defaults = {
 };
 var alarmName = 'breakAlarm';
 
-function launch() {
+function launch(showSettings) {
+    var url;
+    if (showSettings === true) {
+        url = '../templates/popup.html#/settings';
+    } else {
+        url = '../templates/popup.html';
+    }
     chrome.alarms.get(alarmName, function(alarm) {
         chrome.app.window.create(
-            '../templates/popup.html',
+            url,
             {
                 id: 'main',
-                outerBounds: { width: 480, height: 300 },
-                //frame: 'none', TODO - add draggable frame
+                outerBounds: {
+                    width: 500,
+                    height: 350,
+                    minWidth: 500,
+                    minHeight: 350,
+                    maxWidth: 500,
+                    maxHeight: 350
+                },
+                //frame: 'none', // TODO - add draggable frame
             },
             function(popupWindow) {
                 popupWindow.contentWindow.config = config;
@@ -24,43 +37,63 @@ function launch() {
     });
 }
 
-function handleAlarm() {
-
-    if (config.notificationType === 'N') {
-        // Create the notification
-        chrome.notifications.create('reminder', {
-            type: 'basic',
-            iconUrl: 'image/icon128.png',
-            title: 'Time for a break!',
-            message: 'Rest your eyes. Stretch your legs. Breathe. Relax.'
-        }, function(newNotificationId) {
-            notificationId = newNotificationId;
-        });
-
-        // Create the next alarm
-        createAlarm();
-
-        // Clear notification after 5 seconds
-        setTimeout(function() {
-            chrome.notifications.clear(notificationId, function() {});
-        }, 8000);
-    } else if (config.notificationType === 'F') {
-        // Open the fullscreen break popup
-        chrome.app.window.create(
-            '../templates/break.html',
-            {
-                id: 'break',
-                state: 'fullscreen',
+function launchCountdown() {
+    chrome.app.window.create(
+        '../templates/countdown.html',
+        {
+            id: 'countdown',
+            resizable: false,
+            outerBounds: {
+                width: 300,
+                height: 125,
+                minWidth: 300,
+                minHeight: 125,
+                maxWidth: 300,
+                maxHeight: 125
             },
-            function(breakWindow) {
-                breakWindow.contentWindow.config = config;
-                breakWindow.onClosed.addListener(function() {
-                    createAlarm();
-                });
-            }
-        );
-    }
+            frame: 'none',
+            hidden: true,
+            alwaysOnTop: true
+        },
+        function(countdownWindow) {
+            window.setTimeout(function() {
+                countdownWindow.moveTo(
+                    window.screen.width/2 - countdownWindow.getBounds().width/2,
+                    10
+                );
+                countdownWindow.show();
+            }, 500);
+            countdownWindow.contentWindow.config = config;
+            countdownWindow.onClosed.addListener(createAlarm);
+        }
+    );
+}
 
+function createNotification() {
+    chrome.notifications.create('reminder', {
+        type: 'basic',
+        iconUrl: 'image/icon128.png',
+        title: 'Time for a break!',
+        message: 'Rest your eyes. Stretch your legs. Breathe. Relax.'
+    }, function(newNotificationId) {
+        notificationId = newNotificationId;
+    });
+
+    // Create the next alarm
+    createAlarm();
+
+    // Clear notification after 5 seconds
+    setTimeout(function() {
+        chrome.notifications.clear(notificationId, function() {});
+    }, 8000);
+}
+
+function handleAlarm() {
+    if (config.notificationType === 'N') {
+        createNotification();
+    } else if (config.notificationType === 'F') {
+        launchCountdown();
+    }
 }
 
 // When the user clicks on the notification, close it
@@ -98,8 +131,29 @@ chrome.runtime.onMessage.addListener(
         switch (request.event) {
             case 'setConfig':
                 setConfig(request.config);
+                break;
             case 'createAlarm':
                 createAlarm();
+                break;
+            case 'launchSettings':
+                // Remove the onClosed listener of the countdown window to stop
+                // a new alarm from being created
+                countdownWindow = chrome.app.window.get('countdown');
+                countdownWindow.onClosed.removeListener(createAlarm);
+                countdownWindow.close();
+
+                // Force a refresh of the main window if it exists
+                mainWindow = chrome.app.window.get('main');
+                if (mainWindow) {
+                    // Use an event listener to prevent race condition
+                    mainWindow.onClosed.addListener(function() {
+                        launch(true);
+                    });
+                    mainWindow.close();
+                } else {
+                    launch(true);
+                }
+                break;
         }
         sendResponse({success: true});
     }

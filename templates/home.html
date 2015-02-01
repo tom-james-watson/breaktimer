@@ -3,11 +3,7 @@
         <div ng-show="alarm.alarm">
             <h3>Next break in:</h3>
             <div id="countdown" class="center">
-                <h1 ng-show="countdown">
-                    {{ countdown.hours | digits:2 }}<span class="time-unit">h</span>:
-                    {{ countdown.minutes | digits:2 }}<span class="time-unit">m</span>:
-                    {{ countdown.seconds | digits:2 }}<span class="time-unit">s</span>
-                </h1>
+                <h1 ng-show="countdown">{{ countdown.hours | digits:2 }}<span class="time-unit">h</span> : {{ countdown.minutes | digits:2 }}<span class="time-unit">m</span> : {{ countdown.seconds | digits:2 }}<span class="time-unit">s</span> </h1>
                 <h1 ng-hide="countdown">
                     ...
                 </h1>

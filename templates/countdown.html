@@ -6,27 +6,28 @@
         <link rel="stylesheet" href="../css/bootstrap.min.css">
         <link rel="stylesheet" href="../css/main.css">
     </head>
-    <body class="break">
+    <body class="countdown">
         <div class="container">
-            <div data-ng-controller="BreakCtrl">
+            <div data-ng-controller="CountdownCtrl">
                 <div>
-                    <h3>Time for a break!</h3>
+                    <h4>Break starting in...</h4>
                     <div id="countdown" class="center">
-                        <h1 ng-show="countdown">{{ countdown.hours | digits:2 }}<span class="time-unit">h</span> : {{ countdown.minutes | digits:2 }}<span class="time-unit">m</span> : {{ countdown.seconds | digits:2 }}<span class="time-unit">s</span> </h1>
-                        <h1 ng-hide="countdown">
+                        <div ng-show="countdown">{{ countdown.hours | digits:2 }}<span class="time-unit">h</span> : {{ countdown.minutes | digits:2 }}<span class="time-unit">m</span> : {{ countdown.seconds | digits:2 }}<span class="time-unit">s</span> </div>
+                        <div ng-hide="countdown">
                             ...
-                        </h1>
+                        </div>
                     </div>
-                    <div class="spacer"></div>
                     <div class="center">
                         <button type="button" class="btn btn-danger" ng-click="skip()">
                             Skip
                         </button>
+                        <button type="button" class="btn btn-primary" ng-click="start()">
+                            Start
+                        </button>
                     </div>
-                    <div class="spacer"></div>
-                    <div>
-                        Rest your eyes. Stretch your legs. Breathe. Relax.
-                    </div>
+                </div>
+                <div class="actionbar">
+                    <a class="glyphicon glyphicon-cog" ng-click="launchSettings()"></a>
                 </div>
             </div>
         </div>
@@ -35,6 +36,6 @@
         <script src="../js/vendor/moment.min.js"></script>
         <script src="../js/vendor/countdown.min.js"></script>
         <script src="../js/vendor/moment-countdown.min.js"></script>
-        <script src="../js/break.js"></script>
+        <script src="../js/countdown.js"></script>
     </body>
 </html>

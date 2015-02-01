@@ -33,10 +33,6 @@ body {
     font-size: 4em;
 }
 
-#countdown h2 {
-    font-size: 1em;
-}
-
 #countdown .time-unit {
     font-size: 24px;
 }
@@ -48,12 +44,12 @@ body {
 
 .actionbar {
     position: absolute;
-    bottom: 0.5em;
-    right: 1.0em;
+    bottom: 0.25em;
+    right: 0.25em;
 }
 
 .actionbar a {
-    font-size: 3rem;
+    font-size: 24px;
     color: #000;
     text-decoration: none;
 }
@@ -71,4 +67,17 @@ body {
     margin: auto;
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
+}
+
+
+.countdown {
+    font-size: 20px;
+}
+
+.countdown #countdown {
+    margin-bottom: 10px;
+}
+
+.countdown #countdown .time-unit {
+    font-size: 16px;
 }
