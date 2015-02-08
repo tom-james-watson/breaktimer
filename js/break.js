@@ -1,6 +1,6 @@
 angular.module('myApp', ['ngRoute'])
 .controller('BreakCtrl',
-    function($scope, $timeout) {
+    function($scope, $timeout, $document) {
         $scope.countdown = null;
         var breakEnd = moment().add(
             window.config.length,
@@ -28,6 +28,13 @@ angular.module('myApp', ['ngRoute'])
         };
 
         updateCountdown();
+
+        // Close window on Esc
+        window.onkeydown = function(e) {
+            if (e.keyCode == 27 /* ESC */) {
+                window.close();
+            }
+        };
 })
 .filter('digits',
     function() {

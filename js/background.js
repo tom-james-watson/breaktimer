@@ -1,11 +1,13 @@
 var notificationId;
+var countdownId;
 var config = {};
 var defaults = {
     frequency: 28,
     length: 2,
-    notificationType: 'N'
+    notificationType: 'F'
 };
 var alarmName = 'breakAlarm';
+var fullscreenSetInterval;
 
 function launch(showSettings) {
     var url;
@@ -37,36 +39,77 @@ function launch(showSettings) {
     });
 }
 
-function launchCountdown() {
+function launchSettings() {
+    // Force a refresh of the main window if it exists
+    mainWindow = chrome.app.window.get('main');
+    if (mainWindow) {
+        // Use an event listener to prevent race condition
+        mainWindow.onClosed.addListener(function() {
+            launch(true);
+        });
+        mainWindow.close();
+    } else {
+        launch(true);
+    }
+}
+
+function clearFullscreenNotification() {
+    clearInterval(fullscreenSetInterval);
+    chrome.notifications.clear(countdownId, function() {});
+}
+
+function createFullScreen() {
+    clearFullscreenNotification();
+
     chrome.app.window.create(
-        '../templates/countdown.html',
+        '../templates/break.html',
         {
             id: 'countdown',
             resizable: false,
-            outerBounds: {
-                width: 300,
-                height: 125,
-                minWidth: 300,
-                minHeight: 125,
-                maxWidth: 300,
-                maxHeight: 125
-            },
-            frame: 'none',
-            hidden: true,
             alwaysOnTop: true
         },
-        function(countdownWindow) {
-            window.setTimeout(function() {
-                countdownWindow.moveTo(
-                    window.screen.width/2 - countdownWindow.getBounds().width/2,
-                    10
-                );
-                countdownWindow.show();
-            }, 500);
-            countdownWindow.contentWindow.config = config;
-            countdownWindow.onClosed.addListener(createAlarm);
+        function(breakWindow) {
+            breakWindow.contentWindow.config = config;
+            breakWindow.fullscreen();
+            breakWindow.onClosed.addListener(createAlarm);
         }
     );
+}
+
+function createFullscreenNotification() {
+    var notificationOptions = {
+        type: 'progress',
+        iconUrl: 'image/icon128.png',
+        progress: 0,
+        priority: 2,
+        title: 'Time for a break!',
+        message: 'Break about to start...',
+        isClickable: true,
+        buttons: [
+            {title: 'Skip', iconUrl: 'image/skip.png'},
+            {title: 'Options', iconUrl: 'image/options.png'},
+        ]
+    };
+
+    chrome.notifications.create(
+        'countdown',
+        notificationOptions,
+        function(newNotificationId) {
+            countdownId = newNotificationId;
+            fullscreenSetInterval = setInterval(function() {
+                notificationOptions.progress += 10;
+                if (notificationOptions.progress == 100) {
+                   createFullScreen();
+                }
+                else {
+                    chrome.notifications.update(
+                        countdownId,
+                        notificationOptions,
+                        function() {}
+                    );
+                }
+            }, 2000);
+        });
 }
 
 function createNotification() {
@@ -92,13 +135,28 @@ function handleAlarm() {
     if (config.notificationType === 'N') {
         createNotification();
     } else if (config.notificationType === 'F') {
-        launchCountdown();
+        createFullscreenNotification();
     }
 }
 
 // When the user clicks on the notification, close it
-chrome.notifications.onClicked.addListener(function() {
-    chrome.notifications.clear(notificationId, function() {});
+chrome.notifications.onClicked.addListener(function(id) {
+    chrome.notifications.clear(id, function() {});
+});
+
+// When the user clicks on a notification button, handle it
+chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
+    if (id === countdownId) {
+        if (buttonIndex === 0) {
+            // Skip
+            clearFullscreenNotification();
+            createAlarm();
+        } else if (buttonIndex === 1) {
+            // Options
+            clearFullscreenNotification();
+            launchSettings();
+        }
+    }
 });
 
 chrome.app.runtime.onLaunched.addListener(launch);
@@ -136,23 +194,7 @@ chrome.runtime.onMessage.addListener(
                 createAlarm();
                 break;
             case 'launchSettings':
-                // Remove the onClosed listener of the countdown window to stop
-                // a new alarm from being created
-                countdownWindow = chrome.app.window.get('countdown');
-                countdownWindow.onClosed.removeListener(createAlarm);
-                countdownWindow.close();
-
-                // Force a refresh of the main window if it exists
-                mainWindow = chrome.app.window.get('main');
-                if (mainWindow) {
-                    // Use an event listener to prevent race condition
-                    mainWindow.onClosed.addListener(function() {
-                        launch(true);
-                    });
-                    mainWindow.close();
-                } else {
-                    launch(true);
-                }
+                launchSettings();
                 break;
         }
         sendResponse({success: true});
