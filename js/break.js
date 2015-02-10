@@ -3,7 +3,7 @@ angular.module('myApp', ['ngRoute'])
     function($scope, $timeout, $document) {
         $scope.countdown = null;
         var breakEnd = moment().add(
-            window.config.length,
+            chrome.extension.getBackgroundPage().config.length,
             'minutes'
         );
 
@@ -29,9 +29,9 @@ angular.module('myApp', ['ngRoute'])
 
         updateCountdown();
 
-        // Close window on Esc
+        // Close window on Esc or F11
         window.onkeydown = function(e) {
-            if (e.keyCode == 27 /* ESC */) {
+            if (e.keyCode == 27 || e.keyCode == 122) {
                 window.close();
             }
         };

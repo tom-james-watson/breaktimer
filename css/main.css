@@ -11,6 +11,8 @@ ng\:form {
 }
 
 body {
+    height: 250px;
+    width: 500px;
     background-color: #eee;
     font-family: 'Actor', sans-serif;
     background: rgba(80, 198, 175, 0.70);
@@ -19,6 +21,10 @@ body {
 
 .spacer {
     margin-top: 50px;
+}
+
+.little-spacer {
+    margin-top: 10px;
 }
 
 .center {
@@ -67,17 +73,4 @@ body {
     margin: auto;
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
-}
-
-
-.countdown {
-    font-size: 20px;
-}
-
-.countdown #countdown {
-    margin-bottom: 10px;
-}
-
-.countdown #countdown .time-unit {
-    font-size: 16px;
 }

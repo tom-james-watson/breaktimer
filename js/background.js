@@ -1,5 +1,6 @@
 var notificationId;
 var countdownId;
+var breakId;
 var config = {};
 var defaults = {
     frequency: 28,
@@ -9,50 +10,6 @@ var defaults = {
 var alarmName = 'breakAlarm';
 var fullscreenSetInterval;
 
-function launch(showSettings) {
-    var url;
-    if (showSettings === true) {
-        url = '../templates/popup.html#/settings';
-    } else {
-        url = '../templates/popup.html';
-    }
-    chrome.alarms.get(alarmName, function(alarm) {
-        chrome.app.window.create(
-            url,
-            {
-                id: 'main',
-                outerBounds: {
-                    width: 500,
-                    height: 350,
-                    minWidth: 500,
-                    minHeight: 350,
-                    maxWidth: 500,
-                    maxHeight: 350
-                },
-                //frame: 'none', // TODO - add draggable frame
-            },
-            function(popupWindow) {
-                popupWindow.contentWindow.config = config;
-                popupWindow.contentWindow.alarm = alarm;
-            }
-        );
-    });
-}
-
-function launchSettings() {
-    // Force a refresh of the main window if it exists
-    mainWindow = chrome.app.window.get('main');
-    if (mainWindow) {
-        // Use an event listener to prevent race condition
-        mainWindow.onClosed.addListener(function() {
-            launch(true);
-        });
-        mainWindow.close();
-    } else {
-        launch(true);
-    }
-}
-
 function clearFullscreenNotification() {
     clearInterval(fullscreenSetInterval);
     chrome.notifications.clear(countdownId, function() {});
@@ -61,17 +18,18 @@ function clearFullscreenNotification() {
 function createFullScreen() {
     clearFullscreenNotification();
 
-    chrome.app.window.create(
-        '../templates/break.html',
+    chrome.windows.create(
         {
-            id: 'countdown',
-            resizable: false,
-            alwaysOnTop: true
+            url: '../templates/break.html',
+            type: 'detached_panel',
+            focused: true
         },
         function(breakWindow) {
-            breakWindow.contentWindow.config = config;
-            breakWindow.fullscreen();
-            breakWindow.onClosed.addListener(createAlarm);
+            console.log('breakWindowId', breakWindow.id);
+            breakId = breakWindow.id;
+            chrome.windows.update(breakWindow.id, {
+                state: 'fullscreen'
+            });
         }
     );
 }
@@ -87,7 +45,6 @@ function createFullscreenNotification() {
         isClickable: true,
         buttons: [
             {title: 'Skip', iconUrl: 'image/skip.png'},
-            {title: 'Options', iconUrl: 'image/options.png'},
         ]
     };
 
@@ -108,7 +65,7 @@ function createFullscreenNotification() {
                         function() {}
                     );
                 }
-            }, 2000);
+            }, 200);
         });
 }
 
@@ -151,23 +108,26 @@ chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
             // Skip
             clearFullscreenNotification();
             createAlarm();
-        } else if (buttonIndex === 1) {
-            // Options
-            clearFullscreenNotification();
-            launchSettings();
         }
     }
 });
 
-chrome.app.runtime.onLaunched.addListener(launch);
+// Create a new alarm when the break window is closed
+chrome.windows.onRemoved.addListener(function(windowId) {
+    if (windowId === breakId) {
+        createAlarm();
+    }
+});
 
 chrome.alarms.onAlarm.addListener(handleAlarm);
 
 function createAlarm() {
+    console.log('createAlarm');
     chrome.alarms.create(alarmName, {
         delayInMinutes: Number(config.frequency)
     });
     chrome.alarms.get(alarmName, function(alarm) {
+        window.alarm = alarm;
         chrome.runtime.sendMessage({
             event: "alarmCreated",
             alarm: alarm
@@ -177,6 +137,7 @@ function createAlarm() {
 
 function setConfig(newConfig) {
     config = newConfig;
+    window.config = config;
     chrome.storage.local.set({
         config: newConfig
     });
@@ -192,9 +153,6 @@ chrome.runtime.onMessage.addListener(
                 break;
             case 'createAlarm':
                 createAlarm();
-                break;
-            case 'launchSettings':
-                launchSettings();
                 break;
         }
         sendResponse({success: true});

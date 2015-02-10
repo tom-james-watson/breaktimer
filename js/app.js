@@ -14,7 +14,7 @@ angular.module('myApp', ['ngRoute'])
     );
 
     var service = {
-        alarm: angular.copy(window.alarm),
+        alarm: angular.copy(chrome.extension.getBackgroundPage().alarm),
         createAlarm: function() {
             chrome.runtime.sendMessage({
                 event: "createAlarm"
@@ -29,7 +29,7 @@ angular.module('myApp', ['ngRoute'])
 }])
 .factory('ConfigService', ['$rootScope', 'AlarmService', function($rootScope, AlarmService) {
     var service = {
-        config: angular.copy(window.config),
+        config: angular.copy(chrome.extension.getBackgroundPage().config),
         save: function() {
             AlarmService.cancelAlarm();
             chrome.runtime.sendMessage({
@@ -88,6 +88,7 @@ angular.module('myApp', ['ngRoute'])
 .controller('SettingsCtrl',
     function($scope, $location, ConfigService, AlarmService) {
         $scope.config = angular.copy(ConfigService.config);
+        console.log('SettingsCtrl');
 
         $scope.save = function() {
             ConfigService.config = angular.copy($scope.config);
