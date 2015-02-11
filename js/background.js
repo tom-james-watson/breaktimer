@@ -65,7 +65,7 @@ function createFullscreenNotification() {
                         function() {}
                     );
                 }
-            }, 200);
+            }, 2000);
         });
 }
 
