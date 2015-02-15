@@ -1,4 +1,4 @@
-angular.module('popup', ['ngRoute'])
+angular.module('BreakTime', [])
 .factory('AlarmService', ['$rootScope', function($rootScope) {
     var alarmName = 'breakAlarm';
 
@@ -82,7 +82,7 @@ angular.module('popup', ['ngRoute'])
         updateCountdown();
 })
 .controller('SettingsCtrl',
-    function($scope, $location, ConfigService, AlarmService) {
+    function($scope, ConfigService, AlarmService) {
         $scope.config = angular.copy(ConfigService.config);
 
         $scope.breaksFrom = toDate($scope.config.breaksFrom);
@@ -136,7 +136,7 @@ angular.module('popup', ['ngRoute'])
         };
 })
 .controller('BreakCtrl',
-    function($scope, $timeout, $document) {
+    function($scope, $timeout) {
         $scope.countdown = null;
         var breakEnd = moment().add(
             chrome.extension.getBackgroundPage().config.length,
