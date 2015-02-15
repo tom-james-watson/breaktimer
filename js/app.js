@@ -40,19 +40,7 @@ angular.module('popup', ['ngRoute'])
     };
     return service;
 }])
-.config(['$routeProvider', function($routeProvider) {
-    $routeProvider
-        .when('/', {
-            templateUrl: './home.html',
-            controller: 'MainCtrl'
-        })
-        .when('/settings', {
-            templateUrl: './settings.html',
-            controller: 'SettingsCtrl'
-        })
-        .otherwise({redirectTo: '/'});
-}])
-.controller('MainCtrl',
+.controller('PopupCtrl',
     function($scope, $timeout, AlarmService) {
         $scope.countdown = null;
         $scope.alarm = AlarmService;
@@ -67,6 +55,10 @@ angular.module('popup', ['ngRoute'])
 
         $scope.restartBreak = function() {
             AlarmService.createAlarm();
+        };
+
+        $scope.openSettings = function() {
+            chrome.tabs.create({url: "templates/settings.html"});
         };
 
         var updateCountdown = function() {
@@ -92,17 +84,35 @@ angular.module('popup', ['ngRoute'])
 .controller('SettingsCtrl',
     function($scope, $location, ConfigService, AlarmService) {
         $scope.config = angular.copy(ConfigService.config);
-        console.log('SettingsCtrl');
+
+        $scope.breaksFrom = toDate($scope.config.breaksFrom);
+        $scope.breaksTo = toDate($scope.config.breaksTo);
+
+        function toDate(time) {
+            return new Date('1970 01 01 ' + time);
+        }
+
+        $scope.breaksFromChanged = function() {
+            $scope.config.breaksFrom = moment(
+                $scope.breaksFrom
+            ).format('HH:mm');
+        };
+
+        $scope.breaksToChanged = function() {
+            $scope.config.breaksTo = moment(
+                $scope.breaksTo
+            ).format('HH:mm');
+        };
 
         $scope.save = function() {
             ConfigService.config = angular.copy($scope.config);
             ConfigService.save();
-            $location.path('/');
+            window.close();
         };
 
         $scope.cancel = function() {
             $scope.config = angular.copy(ConfigService.config);
-            $location.path('/');
+            window.close();
         };
 
         $scope.values = [{
@@ -123,6 +133,43 @@ angular.module('popup', ['ngRoute'])
 
         $scope.selectNotify = function() {
             $scope.config.notificationType = $scope.selected.value;
+        };
+})
+.controller('BreakCtrl',
+    function($scope, $timeout, $document) {
+        $scope.countdown = null;
+        var breakEnd = moment().add(
+            chrome.extension.getBackgroundPage().config.length,
+            'minutes'
+        );
+
+        $scope.skip = function() {
+            window.close();
+        };
+
+        var updateCountdown = function() {
+            if (breakEnd) {
+                var now = moment();
+
+                if (now > breakEnd) {
+                    window.close();
+                } else {
+                    $scope.countdown = breakEnd.countdown(
+                        now,
+                        countdown.HOURS|countdown.MINUTES|countdown.SECONDS
+                    );
+                }
+            }
+            $timeout(updateCountdown, 1000);
+        };
+
+        updateCountdown();
+
+        // Close window on Esc or F11
+        window.onkeydown = function(e) {
+            if (e.keyCode == 27 || e.keyCode == 122) {
+                window.close();
+            }
         };
 })
 .filter('digits',

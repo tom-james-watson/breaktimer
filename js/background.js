@@ -5,8 +5,11 @@ var config = {};
 var defaults = {
     frequency: 28,
     length: 2,
-    notificationType: 'F'
+    notificationType: 'F',
+    breaksFrom: '09:00',
+    breaksTo: '09:00'
 };
+console.log(defaults);
 var alarmName = 'breakAlarm';
 var fullscreenSetInterval;
 
@@ -25,7 +28,6 @@ function createFullScreen() {
             focused: true
         },
         function(breakWindow) {
-            console.log('breakWindowId', breakWindow.id);
             breakId = breakWindow.id;
             chrome.windows.update(breakWindow.id, {
                 state: 'fullscreen'
@@ -122,11 +124,12 @@ chrome.windows.onRemoved.addListener(function(windowId) {
 chrome.alarms.onAlarm.addListener(handleAlarm);
 
 function createAlarm() {
-    console.log('createAlarm');
     chrome.alarms.create(alarmName, {
         delayInMinutes: Number(config.frequency)
     });
     chrome.alarms.get(alarmName, function(alarm) {
+        console.log(alarm);
+        alarmTime = new Date(alarm.scheduledTime);
         window.alarm = alarm;
         chrome.runtime.sendMessage({
             event: "alarmCreated",

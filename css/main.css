@@ -13,18 +13,26 @@ ng\:form {
 body {
     height: 250px;
     width: 500px;
-    background-color: #eee;
     font-family: 'Actor', sans-serif;
-    background: rgba(80, 198, 175, 0.70);
-    color: #444;
+    background: #16a085;
+    color: #FFF;
+}
+
+h1, h2, h3, h4, h5 {
+    text-shadow: #777 1px 1px;
+}
+
+.btn {
+    color: #333;
+}
+
+.btn.btn-primary,
+.btn.btn-danger {
+    color: #FFF;
 }
 
 .spacer {
     margin-top: 50px;
-}
-
-.little-spacer {
-    margin-top: 10px;
 }
 
 .center {
@@ -72,5 +80,17 @@ body {
     height: 500px;
     margin: auto;
     position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.settings .container {
+    width: 700px;
+    height: 500px;
+    margin: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
 }

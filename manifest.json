@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "0.0.8",
+    "version": "0.1.0",
     "name": "Break Timer",
     "description": "Enforce periodic breaks to prevent RSI / eye strain.",
     "icons": {
@@ -26,5 +26,6 @@
         "notifications"
     ],
     "offline_enabled": true,
-    "minimum_chrome_version": "32"
+    "minimum_chrome_version": "32",
+    "options_page": "templates/settings.html"
 }

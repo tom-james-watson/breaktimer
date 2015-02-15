@@ -8,13 +8,47 @@
     </head>
     <body>
         <div class="container">
-            <div data-ng-view></div>
+            <div data-ng-controller="PopupCtrl">
+                <div>
+                    <div ng-show="alarm.alarm">
+                        <h3>Next break in:</h3>
+                        <div id="countdown" class="center">
+                            <h1 ng-show="countdown">{{ countdown.hours | digits:2 }}<span class="time-unit">h</span> : {{ countdown.minutes | digits:2 }}<span class="time-unit">m</span> : {{ countdown.seconds | digits:2 }}<span class="time-unit">s</span> </h1>
+                            <h1 ng-hide="countdown">
+                                ...
+                            </h1>
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="center">
+                            <button type="button" class="btn btn-danger" ng-click="toggleBreaksOn()">
+                                Disable Breaks
+                            </button>
+                            <button type="button" class="btn" ng-click="restartBreak()">
+                                Restart Break
+                            </button>
+                        </div>
+                    </div>
+
+                    <div ng-hide="alarm.alarm">
+                        <h3>Breaks currently disabled</h3>
+                        <div class="spacer"></div>
+                        <div class="center">
+                            <button type="button" class="btn btn-primary" ng-click="toggleBreaksOn()">
+                                Enable Breaks
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="actionbar">
+                    <a class="glyphicon glyphicon-cog" href="" ng-click="openSettings()"></a>
+                </div>
+            </div>
         </div>
         <script src="../js/vendor/angular.min.js"></script>
         <script src="../js/vendor/angular-route.min.js"></script>
         <script src="../js/vendor/moment.min.js"></script>
         <script src="../js/vendor/countdown.min.js"></script>
         <script src="../js/vendor/moment-countdown.min.js"></script>
-        <script src="../js/popup.js"></script>
+        <script src="../js/app.js"></script>
     </body>
 </html>
