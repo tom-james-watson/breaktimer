@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute'])
+angular.module('popup', ['ngRoute'])
 .factory('AlarmService', ['$rootScope', function($rootScope) {
     var alarmName = 'breakAlarm';
 
@@ -63,6 +63,10 @@ angular.module('myApp', ['ngRoute'])
             } else {
                 AlarmService.createAlarm();
             }
+        };
+
+        $scope.restartBreak = function() {
+            AlarmService.createAlarm();
         };
 
         var updateCountdown = function() {

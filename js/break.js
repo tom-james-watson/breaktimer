@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute'])
+angular.module('break', ['ngRoute'])
 .controller('BreakCtrl',
     function($scope, $timeout, $document) {
         $scope.countdown = null;
