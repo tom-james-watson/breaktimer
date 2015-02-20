@@ -94,3 +94,16 @@ h1, h2, h3, h4, h5 {
     left: 0;
     right: 0;
 }
+
+.form-control {
+    width: initial;
+}
+
+.form-control.checkbox {
+    width: 17px;
+    height: 17px;
+}
+
+.form-control.min-input {
+    width: 75px;
+}

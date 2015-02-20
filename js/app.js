@@ -41,9 +41,23 @@ angular.module('BreakTime', [])
     return service;
 }])
 .controller('PopupCtrl',
-    function($scope, $timeout, AlarmService) {
+    function($scope, $timeout, AlarmService, ConfigService) {
+        $scope.workingHoursFrom = moment(
+            ConfigService.config.workingHoursFrom,
+            'HH:mm'
+        );
+        $scope.workingHoursTo = moment(
+            ConfigService.config.workingHoursTo,
+            'HH:mm'
+        );
+
         $scope.countdown = null;
         $scope.alarm = AlarmService;
+
+        var working = moment().add(
+            chrome.extension.getBackgroundPage().config.length,
+            'minutes'
+        );
 
         $scope.toggleBreaksOn = function() {
             if ($scope.alarm.alarm) {
@@ -62,6 +76,14 @@ angular.module('BreakTime', [])
         };
 
         var updateCountdown = function() {
+            $scope.now = moment();
+            $scope.outsideWorkingHours = (
+                ConfigService.config.workingHoursEnabled &&
+                !(
+                    ($scope.workingHoursFrom <= $scope.now) &&
+                    ($scope.now <= $scope.workingHoursTo)
+                )
+            );
             if ($scope.alarm.alarm) {
                 now = moment();
                 if (now > $scope.alarm.alarm.scheduledTime) {
@@ -85,22 +107,22 @@ angular.module('BreakTime', [])
     function($scope, ConfigService, AlarmService) {
         $scope.config = angular.copy(ConfigService.config);
 
-        $scope.breaksFrom = toDate($scope.config.breaksFrom);
-        $scope.breaksTo = toDate($scope.config.breaksTo);
+        $scope.workingHoursFrom = toDate($scope.config.workingHoursFrom);
+        $scope.workingHoursTo = toDate($scope.config.workingHoursTo);
 
         function toDate(time) {
             return new Date('1970 01 01 ' + time);
         }
 
-        $scope.breaksFromChanged = function() {
-            $scope.config.breaksFrom = moment(
-                $scope.breaksFrom
+        $scope.workingHoursFromChanged = function() {
+            $scope.config.workingHoursFrom = moment(
+                $scope.workingHoursFrom
             ).format('HH:mm');
         };
 
-        $scope.breaksToChanged = function() {
-            $scope.config.breaksTo = moment(
-                $scope.breaksTo
+        $scope.workingHoursToChanged = function() {
+            $scope.config.workingHoursTo = moment(
+                $scope.workingHoursTo
             ).format('HH:mm');
         };
 

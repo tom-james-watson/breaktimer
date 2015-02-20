@@ -9,7 +9,7 @@
     <body>
         <div class="container">
             <div data-ng-controller="PopupCtrl">
-                <div>
+                <div ng-hide="outsideWorkingHours">
                     <div ng-show="alarm.alarm">
                         <h3>Next break in:</h3>
                         <div id="countdown" class="center">
@@ -37,6 +37,15 @@
                                 Enable Breaks
                             </button>
                         </div>
+                    </div>
+                </div>
+                <div ng-show="outsideWorkingHours">
+                    <h3>Outside working hours</h3>
+                    <h4>Breaks disabled till:</h2>
+                    <div id="countdown" class="center">
+                        <h1>
+                            {{ workingHoursFrom.format('HH:mm') }}
+                        </h1>
                     </div>
                 </div>
                 <div class="actionbar">

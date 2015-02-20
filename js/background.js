@@ -6,10 +6,10 @@ var defaults = {
     frequency: 28,
     length: 2,
     notificationType: 'F',
-    breaksFrom: '09:00',
-    breaksTo: '09:00'
+    workingHoursFrom: '09:00',
+    workingHoursTo: '17:00',
+    workingHoursEnabled: true
 };
-console.log(defaults);
 var alarmName = 'breakAlarm';
 var fullscreenSetInterval;
 
@@ -90,11 +90,35 @@ function createNotification() {
     }, 8000);
 }
 
+function getOutsideWorkingHours() {
+    if (config.workingHoursEnabled === false) {
+        return false;
+    }
+
+    var workingHoursFrom = moment(
+        config.workingHoursFrom,
+        'HH:mm'
+    );
+    var workingHoursTo = moment(
+        config.workingHoursTo,
+        'HH:mm'
+    );
+    var now = moment();
+    return !(
+        (workingHoursFrom <= now) &&
+        (now <= workingHoursTo)
+    );
+}
+
 function handleAlarm() {
-    if (config.notificationType === 'N') {
-        createNotification();
-    } else if (config.notificationType === 'F') {
-        createFullscreenNotification();
+    if (getOutsideWorkingHours()) {
+        createAlarm();
+    } else {
+        if (config.notificationType === 'N') {
+            createNotification();
+        } else if (config.notificationType === 'F') {
+            createFullscreenNotification();
+        }
     }
 }
 
@@ -128,7 +152,6 @@ function createAlarm() {
         delayInMinutes: Number(config.frequency)
     });
     chrome.alarms.get(alarmName, function(alarm) {
-        console.log(alarm);
         alarmTime = new Date(alarm.scheduledTime);
         window.alarm = alarm;
         chrome.runtime.sendMessage({
