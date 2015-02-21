@@ -160,7 +160,7 @@ chrome.idle.onStateChanged.addListener(function (newState) {
         if (['idle', 'locked'].indexOf(idleState) > -1) {
             idleStart = moment();
         } else if (idleState === 'active') {
-            var idleMinutes = moment().diff(idleStart, 'seconds');
+            var idleMinutes = moment().diff(idleStart, 'minutes');
             if (idleMinutes > config.idleResetMinutes) {
                 createAlarm();
                 chrome.notifications.create('idleRestart', {
