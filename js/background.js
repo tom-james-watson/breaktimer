@@ -47,6 +47,7 @@ function createFullscreenNotification() {
         isClickable: true,
         buttons: [
             {title: 'Skip', iconUrl: 'image/skip.png'},
+            {title: 'Postpone 3 minutes', iconUrl: 'image/postpone.png'}
         ]
     };
 
@@ -134,6 +135,10 @@ chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
             // Skip
             clearFullscreenNotification();
             createAlarm();
+        } else if (buttonIndex === 1) {
+            // Postpone
+            clearFullscreenNotification();
+            createAlarm(3);
         }
     }
 });
@@ -147,9 +152,12 @@ chrome.windows.onRemoved.addListener(function(windowId) {
 
 chrome.alarms.onAlarm.addListener(handleAlarm);
 
-function createAlarm() {
+function createAlarm(minutes) {
+    if (typeof(minutes) === 'undefined') {
+        minutes = Number(config.frequency)
+    }
     chrome.alarms.create(alarmName, {
-        delayInMinutes: Number(config.frequency)
+        delayInMinutes: minutes
     });
     chrome.alarms.get(alarmName, function(alarm) {
         alarmTime = new Date(alarm.scheduledTime);
