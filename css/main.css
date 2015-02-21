@@ -99,6 +99,14 @@ h1, h2, h3, h4, h5 {
     width: initial;
 }
 
+.form-group label {
+    display: block;
+}
+
+input.form-control {
+    display: inline-block;
+}
+
 .form-control.checkbox {
     width: 17px;
     height: 17px;

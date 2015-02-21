@@ -12,50 +12,72 @@
                 <h1>Break Timer - Settings</h1>
                 <div class="spacer"></div>
                 <form ng-submit="save()">
-                    <div class="form-group">
-                        <label for="break-frequency">Notify me with</label>
-                        <select
-                            class="form-control"
-                            ng-options="item as item.name for item in values track by item.id"
-                            ng-model="selected"
-                            ng-change="selectNotify()"
-                        ></select>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="break-frequency">Notify me with</label>
+                                <select
+                                    class="form-control"
+                                    ng-options="item as item.name for item in values track by item.id"
+                                    ng-model="selected"
+                                    ng-change="selectNotify()"
+                                ></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3>Break Settings</h3>
+                            <div class="form-group">
+                                <label for="break-frequency">Break frequency</label>
+                                <input type="text" id="break-frequency" class="form-control min-input"
+                                    ng-model="config.frequency"/> <span>minutes</span>
+                            </div>
+                            <div class="form-group" ng-show="config.notificationType === 'F'">
+                                <label for="break-frequency">Break length</label>
+                                <input type="text" id="break-length" class="form-control min-input"
+                                    ng-model="config.length"/> <span>minutes</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="spacer"></div>
-                    <h3>Break Settings</h3>
-                    <div class="form-group">
-                        <label for="break-frequency">Break Frequency (minutes)</label>
-                        <input type="text" id="break-frequency" class="form-control min-input"
-                            ng-model="config.frequency"/>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3>Working Hours</h3>
+                            <div class="form-group">
+                                <label for="working-hours-enabled">Enable working hours</label>
+                                <input type="checkbox" id="working-hours-enabled"
+                                class="form-control checkbox" ng-model="config.workingHoursEnabled"/>
+                            </div>
+                            <div class="form-group" ng-show="config.workingHoursEnabled">
+                                <label for="breaks-from">Breaks from</label>
+                                <input type="time" id="breaks-from" class="form-control time-input"
+                                    ng-model="workingHoursFrom" ng-change="workingHoursFromChanged()"/>
+                            </div>
+                            <div class="form-group" ng-show="config.workingHoursEnabled">
+                                <label for="breaks-to">Breaks to</label>
+                                <input type="time" id="breaks-to" class="form-control time-input"
+                                    ng-model="workingHoursTo" ng-change="workingHoursToChanged()"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3>Idle Reset</h3>
+                            <div class="form-group">
+                                <label for="idle-reset-enabled">Reset countdown after being idle</label>
+                                <input type="checkbox" id="idle-reset-enabled"
+                                class="form-control checkbox" ng-model="config.idleResetEnabled"/>
+                            </div>
+                            <div class="form-group" ng-show="config.idleResetEnabled">
+                                <label for="idle-reset-minutes">Reset countdown when idle for</label>
+                                <input type="text" id="idle-reset-minutes" class="form-control min-input"
+                                    ng-model="config.idleResetMinutes"/> <span>minutes</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group" ng-show="config.notificationType === 'F'">
-                        <label for="break-frequency">Break Length (minutes)</label>
-                        <input type="text" id="break-length" class="form-control min-input"
-                            ng-model="config.length"/>
+                    <div class="row">
+                        <div class="spacer"></div>
+                        <input class="btn btn-primary" type="submit" value="Save" />
+                        <button class="btn" type="button" value="Cancel" ng-click="cancel()" />
+                            Cancel
+                        </button>
                     </div>
-                    <div class="spacer"></div>
-                    <h3>Working Hours</h3>
-                    <div class="form-group">
-                        <label for="working-hours-enabled">Enable Working Hours</label>
-                        <input type="checkbox" id="working-hours-enabled"
-                        class="form-control checkbox" ng-model="config.workingHoursEnabled"/>
-                    </div>
-                    <div class="form-group" ng-show="config.workingHoursEnabled">
-                        <label for="breaks-from">Breaks From</label>
-                        <input type="time" id="breaks-from" class="form-control time-input"
-                            ng-model="workingHoursFrom" ng-change="workingHoursFromChanged()"/>
-                    </div>
-                    <div class="form-group" ng-show="config.workingHoursEnabled">
-                        <label for="breaks-to">Breaks To</label>
-                        <input type="time" id="breaks-to" class="form-control time-input"
-                            ng-model="workingHoursTo" ng-change="workingHoursToChanged()"/>
-
-                    </div>
-                    <div class="spacer"></div>
-                    <input class="btn btn-primary" type="submit" value="Save" />
-                    <button class="btn" type="button" value="Cancel" ng-click="cancel()" />
-                        Cancel
-                    </button>
                 </form>
             </div>
         </div>

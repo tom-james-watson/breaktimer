@@ -2,13 +2,17 @@ var notificationId;
 var countdownId;
 var breakId;
 var config = {};
+var idleState = 'active';
+var idleStart;
 var defaults = {
     frequency: 28,
     length: 2,
     notificationType: 'F',
     workingHoursFrom: '09:00',
     workingHoursTo: '17:00',
-    workingHoursEnabled: true
+    workingHoursEnabled: true,
+    idleResetMinutes: 5,
+    idleResetEnabled: true
 };
 var alarmName = 'breakAlarm';
 var fullscreenSetInterval;
@@ -139,6 +143,34 @@ chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
             // Postpone
             clearFullscreenNotification();
             createAlarm(3);
+        }
+    }
+});
+
+// Set idle detection interval to 5 minutes
+chrome.idle.setDetectionInterval(15);
+
+// Handle user state idle change
+chrome.idle.onStateChanged.addListener(function (newState) {
+    if (config.idleResetEnabled) {
+        idleState = newState;
+
+        // Reset countdown when returning from idle period of more than
+        // config.idleResetMinutes minutes
+        if (['idle', 'locked'].indexOf(idleState) > -1) {
+            idleStart = moment();
+        } else if (idleState === 'active') {
+            var idleMinutes = moment().diff(idleStart, 'seconds');
+            if (idleMinutes > config.idleResetMinutes) {
+                createAlarm();
+                chrome.notifications.create('idleRestart', {
+                    type: 'basic',
+                    iconUrl: 'image/icon128.png',
+                    title: 'Break has been reset',
+                    message: '',
+                    contextMessage: 'You were idle for '+idleMinutes+' minutes'
+                }, function() {});
+            }
         }
     }
 });
