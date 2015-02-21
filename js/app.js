@@ -44,6 +44,7 @@ angular.module('BreakTime', [])
 }])
 .controller('PopupCtrl',
     function($scope, $timeout, AlarmService, ConfigService) {
+        $scope.notificationType = ConfigService.config.notificationType;
         $scope.workingHoursFrom = moment(
             ConfigService.config.workingHoursFrom,
             'HH:mm'

@@ -52,7 +52,7 @@
                             <a class="glyphicon glyphicon-cog dropdown-toggle" data-toggle="dropdown" href="#"></a>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                 <li ng-click="restartBreak()"><a href="#">Restart countdown</a></li>
-                                <li ng-click="startBreak()"><a href="#">Start break now</a></li>
+                                <li ng-click="startBreak()" ng-hide="notificationType !== 'F'"><a href="#">Start break now</a></li>
                                 <li ng-click="openSettings()"><a href="#">Options</a></li>
                             </ul>
                         </li>
