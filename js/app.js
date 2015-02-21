@@ -104,11 +104,13 @@ angular.module('BreakTime', [])
         updateCountdown();
 })
 .controller('SettingsCtrl',
-    function($scope, ConfigService, AlarmService) {
+    function($scope, ConfigService, AlarmService, $timeout) {
         $scope.config = angular.copy(ConfigService.config);
 
         $scope.workingHoursFrom = toDate($scope.config.workingHoursFrom);
         $scope.workingHoursTo = toDate($scope.config.workingHoursTo);
+
+        $scope.showSaveConfirm = false;
 
         function toDate(time) {
             return new Date('1970 01 01 ' + time);
@@ -129,12 +131,10 @@ angular.module('BreakTime', [])
         $scope.save = function() {
             ConfigService.config = angular.copy($scope.config);
             ConfigService.save();
-            window.close();
-        };
-
-        $scope.cancel = function() {
-            $scope.config = angular.copy(ConfigService.config);
-            window.close();
+            $scope.showSaveConfirm = true;
+            $timeout(function() {
+                $scope.showSaveConfirm = false;
+            }, 3000);
         };
 
         $scope.values = [{

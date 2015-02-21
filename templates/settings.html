@@ -9,6 +9,9 @@
     <body class="settings">
         <div class="container">
             <div data-ng-controller="SettingsCtrl">
+                <div class="alert alert-info save-alert" ng-show="showSaveConfirm">
+                    Changes saved successfully
+                </div>
                 <h1>Break Timer - Settings</h1>
                 <div class="spacer"></div>
                 <form ng-submit="save()">
@@ -74,9 +77,6 @@
                     <div class="row">
                         <div class="spacer"></div>
                         <input class="btn btn-primary" type="submit" value="Save" />
-                        <button class="btn" type="button" value="Cancel" ng-click="cancel()" />
-                            Cancel
-                        </button>
                     </div>
                 </form>
             </div>

@@ -115,3 +115,12 @@ input.form-control {
 .form-control.min-input {
     width: 75px;
 }
+
+.alert.save-alert {
+    width: 400px;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
+}

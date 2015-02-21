@@ -4,7 +4,10 @@ var breakId;
 var config = {};
 var idleState = 'active';
 var idleStart;
-var defaults = {
+var alarmName = 'breakAlarm';
+var fullscreenSetInterval;
+
+var defaultConfig = {
     frequency: 28,
     length: 2,
     notificationType: 'F',
@@ -14,8 +17,6 @@ var defaults = {
     idleResetMinutes: 5,
     idleResetEnabled: true
 };
-var alarmName = 'breakAlarm';
-var fullscreenSetInterval;
 
 function clearFullscreenNotification() {
     clearInterval(fullscreenSetInterval);
@@ -163,13 +164,6 @@ chrome.idle.onStateChanged.addListener(function (newState) {
             var idleMinutes = moment().diff(idleStart, 'minutes');
             if (idleMinutes > config.idleResetMinutes) {
                 createAlarm();
-                chrome.notifications.create('idleRestart', {
-                    type: 'basic',
-                    iconUrl: 'image/icon128.png',
-                    title: 'Break has been reset',
-                    message: '',
-                    contextMessage: 'You were idle for '+idleMinutes+' minutes'
-                }, function() {});
             }
         }
     }
@@ -225,10 +219,10 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-// Grab config from local storage or take defaults
+// Grab config from local storage or take defaultConfig
 chrome.storage.local.get('config', function(data) {
     if (typeof(data.config) === 'undefined') {
-        setConfig(defaults);
+        setConfig(defaultConfig);
     } else {
         setConfig(data.config);
     }
