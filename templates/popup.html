@@ -23,9 +23,6 @@
                             <button type="button" class="btn btn-danger" ng-click="toggleBreaksOn()">
                                 Disable Breaks
                             </button>
-                            <button type="button" class="btn" ng-click="restartBreak()">
-                                Restart Break
-                            </button>
                         </div>
                     </div>
 
@@ -49,10 +46,22 @@
                     </div>
                 </div>
                 <div class="actionbar">
-                    <a class="glyphicon glyphicon-cog" href="" ng-click="openSettings()"></a>
+                    <a class="glyphicon glyphicon-cog" ng-click="openSettings()" ng-show="outsideWorkingHours" href="#"></a>
+                    <ul class="dropup" ng-hide="outsideWorkingHours">
+                        <li class="dropdown">
+                            <a class="glyphicon glyphicon-cog dropdown-toggle" data-toggle="dropdown" href="#"></a>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <li ng-click="restartBreak()"><a href="#">Restart countdown</a></li>
+                                <li ng-click="startBreak()"><a href="#">Start break now</a></li>
+                                <li ng-click="openSettings()"><a href="#">Options</a></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
+        <script src="../js/vendor/jquery.min.js"></script>
+        <script src="../js/vendor/bootstrap.min.js"></script>
         <script src="../js/vendor/angular.min.js"></script>
         <script src="../js/vendor/moment.min.js"></script>
         <script src="../js/vendor/countdown.min.js"></script>

@@ -20,10 +20,12 @@ var defaultConfig = {
 
 function clearFullscreenNotification() {
     clearInterval(fullscreenSetInterval);
-    chrome.notifications.clear(countdownId, function() {});
+    if (typeof(countdownId) !== 'undefined') {
+        chrome.notifications.clear(countdownId, function() {});
+    }
 }
 
-function createFullScreen() {
+function createFullscreen() {
     clearFullscreenNotification();
 
     chrome.windows.create(
@@ -64,7 +66,7 @@ function createFullscreenNotification() {
             fullscreenSetInterval = setInterval(function() {
                 notificationOptions.progress += 10;
                 if (notificationOptions.progress == 100) {
-                   createFullScreen();
+                   createFullscreen();
                 }
                 else {
                     chrome.notifications.update(
@@ -128,6 +130,14 @@ function handleAlarm() {
     }
 }
 
+function startBreak() {
+    if (config.notificationType === 'N') {
+        createNotification();
+    } else if (config.notificationType === 'F') {
+        createFullscreen();
+    }
+}
+
 // When the user clicks on the notification, close it
 chrome.notifications.onClicked.addListener(function(id) {
     chrome.notifications.clear(id, function() {});
@@ -179,8 +189,9 @@ chrome.windows.onRemoved.addListener(function(windowId) {
 chrome.alarms.onAlarm.addListener(handleAlarm);
 
 function createAlarm(minutes) {
+    console.log('minutes', minutes);
     if (typeof(minutes) === 'undefined') {
-        minutes = Number(config.frequency)
+        minutes = Number(config.frequency);
     }
     chrome.alarms.create(alarmName, {
         delayInMinutes: minutes
@@ -212,7 +223,10 @@ chrome.runtime.onMessage.addListener(
                 setConfig(request.config);
                 break;
             case 'createAlarm':
-                createAlarm();
+                createAlarm(request.minutes);
+                break;
+            case 'startBreak':
+                startBreak();
                 break;
         }
         sendResponse({success: true});

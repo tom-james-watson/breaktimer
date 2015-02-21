@@ -15,9 +15,11 @@ angular.module('BreakTime', [])
 
     var service = {
         alarm: angular.copy(chrome.extension.getBackgroundPage().alarm),
-        createAlarm: function() {
+        createAlarm: function(minutes) {
+            console.log('minutes', minutes);
             chrome.runtime.sendMessage({
-                event: "createAlarm"
+                event: "createAlarm",
+                minutes: minutes
             }, function(response) {});
         },
         cancelAlarm: function() {
@@ -69,6 +71,14 @@ angular.module('BreakTime', [])
 
         $scope.restartBreak = function() {
             AlarmService.createAlarm();
+        };
+
+        $scope.startBreak = function() {
+            AlarmService.cancelAlarm();
+            chrome.runtime.sendMessage({
+                event: "startBreak"
+            }, function(response) {});
+            window.close();
         };
 
         $scope.openSettings = function() {

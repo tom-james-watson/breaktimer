@@ -62,10 +62,26 @@ h1, h2, h3, h4, h5 {
     right: 0.25em;
 }
 
-.actionbar a {
+.actionbar .glyphicon-cog {
     font-size: 24px;
     color: #000;
     text-decoration: none;
+}
+
+.actionbar .glyphicon-cog:hover {
+    color: #333;
+}
+
+.actionbar li {
+    list-style: none;
+}
+
+.actionbar ul {
+    margin: 0;
+}
+
+.actionbar {
+    color: #333;
 }
 
 .typeahead ul {
