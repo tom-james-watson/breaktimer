@@ -139,6 +139,12 @@ angular.module('BreakTime', [])
             ).format('HH:mm');
         };
 
+        $scope.checkOrder = function() {
+            return (
+                moment($scope.workingHoursFrom) < moment($scope.workingHoursTo)
+            );
+        };
+
         $scope.save = function() {
             ConfigService.config = angular.copy($scope.config);
             ConfigService.save();

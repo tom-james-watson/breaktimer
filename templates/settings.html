@@ -14,7 +14,7 @@
                 </div>
                 <h1>Break Timer - Settings</h1>
                 <div class="spacer"></div>
-                <form ng-submit="save()">
+                <form name="settingsForm" ng-submit="save()">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -32,12 +32,12 @@
                             <div class="form-group">
                                 <label for="break-frequency">Break frequency</label>
                                 <input type="text" id="break-frequency" class="form-control min-input"
-                                    ng-model="config.frequency"/> <span>minutes</span>
+                                    ng-model="config.frequency" required/> <span>minutes</span>
                             </div>
                             <div class="form-group" ng-show="config.notificationType === 'F'">
                                 <label for="break-frequency">Break length</label>
                                 <input type="text" id="break-length" class="form-control min-input"
-                                    ng-model="config.length"/> <span>minutes</span>
+                                    ng-model="config.length" required/> <span>minutes</span>
                             </div>
                         </div>
                     </div>
@@ -49,15 +49,18 @@
                                 <input type="checkbox" id="working-hours-enabled"
                                 class="form-control checkbox" ng-model="config.workingHoursEnabled"/>
                             </div>
-                            <div class="form-group" ng-show="config.workingHoursEnabled">
+                            <div class="form-group" ng-show="config.workingHoursEnabled" ng-class="{ 'has-error' : !checkOrder() }">
                                 <label for="breaks-from">Breaks from</label>
                                 <input type="time" id="breaks-from" class="form-control time-input"
-                                    ng-model="workingHoursFrom" ng-change="workingHoursFromChanged()"/>
+                                    ng-model="workingHoursFrom" ng-change="workingHoursFromChanged()"
+                                    required/>
                             </div>
-                            <div class="form-group" ng-show="config.workingHoursEnabled">
+                            <div class="form-group" ng-show="config.workingHoursEnabled" ng-class="{ 'has-error' : !checkOrder() }">
                                 <label for="breaks-to">Breaks to</label>
                                 <input type="time" id="breaks-to" class="form-control time-input"
-                                    ng-model="workingHoursTo" ng-change="workingHoursToChanged()"/>
+                                    ng-model="workingHoursTo" ng-change="workingHoursToChanged()"
+                                    ng-valid="workingHoursTo > workingHoursFrom" required/>
+                                <span class="help-block" ng-show='!checkOrder()'>Breaks from must be earlier than breaks to</span>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -76,12 +79,13 @@
                     </div>
                     <div class="row">
                         <div class="spacer"></div>
-                        <input class="btn btn-primary" type="submit" value="Save" />
+                        <input class="btn btn-primary" type="submit" value="Save" ng-disabled="!settingsForm.$valid || !checkOrder()"/>
                     </div>
                 </form>
             </div>
         </div>
         <script src="../js/vendor/angular.min.js"></script>
+        <script src="../js/vendor/angular-ui.js"></script>
         <script src="../js/vendor/moment.min.js"></script>
         <script src="../js/vendor/countdown.min.js"></script>
         <script src="../js/vendor/moment-countdown.min.js"></script>

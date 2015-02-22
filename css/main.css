@@ -140,3 +140,8 @@ input.form-control {
     right: 0;
     text-align: center;
 }
+
+.form-group.has-error,
+.form-group.has-error .help-block {
+    color: #FD5E5A;
+}
