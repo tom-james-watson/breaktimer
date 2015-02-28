@@ -18,7 +18,6 @@
                                 ...
                             </h1>
                         </div>
-                        <div class="spacer"></div>
                         <div class="center">
                             <button type="button" class="btn btn-danger" ng-click="toggleBreaksOn()">
                                 Disable Breaks
@@ -37,8 +36,7 @@
                     </div>
                 </div>
                 <div ng-show="outsideWorkingHours">
-                    <h3>Outside working hours</h3>
-                    <h4>Breaks disabled till:</h2>
+                    <h3>Breaks disabled until:</h3>
                     <div id="countdown" class="center">
                         <h1>
                             {{ workingHoursFrom.format('HH:mm') }}
@@ -60,6 +58,7 @@
                 </div>
             </div>
         </div>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' rel='stylesheet' type='text/css'>
         <script src="../js/vendor/jquery.min.js"></script>
         <script src="../js/vendor/bootstrap.min.js"></script>
         <script src="../js/vendor/angular.min.js"></script>
