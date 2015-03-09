@@ -23,8 +23,10 @@ angular.module('BreakTime', [])
             }, function(response) {});
         },
         cancelAlarm: function() {
-            chrome.alarms.clear(alarmName);
-            service.alarm = null;
+            chrome.runtime.sendMessage({
+                event: "cancelAlarm"
+            }, function(response) {});
+            this.alarm = null;
         }
     };
     return service;

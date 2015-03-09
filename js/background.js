@@ -189,7 +189,6 @@ chrome.windows.onRemoved.addListener(function(windowId) {
 chrome.alarms.onAlarm.addListener(handleAlarm);
 
 function createAlarm(minutes) {
-    console.log('minutes', minutes);
     if (typeof(minutes) === 'undefined') {
         minutes = Number(config.frequency);
     }
@@ -224,6 +223,10 @@ chrome.runtime.onMessage.addListener(
                 break;
             case 'createAlarm':
                 createAlarm(request.minutes);
+                break;
+            case 'cancelAlarm':
+                chrome.alarms.clear(alarmName);
+                window.alarm = null;
                 break;
             case 'startBreak':
                 startBreak();
