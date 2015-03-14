@@ -158,13 +158,16 @@ chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
     }
 });
 
-// Set idle detection interval to 5 minutes
+// Set idle detection interval to 15 seconds
 chrome.idle.setDetectionInterval(15);
 
 // Handle user state idle change
 chrome.idle.onStateChanged.addListener(function (newState) {
+    console.log('idleResetEnabled', config.idleResetEnabled);
     if (config.idleResetEnabled) {
         idleState = newState;
+
+        console.log('newState', newState, Date());
 
         // Reset countdown when returning from idle period of more than
         // config.idleResetMinutes minutes
@@ -172,6 +175,8 @@ chrome.idle.onStateChanged.addListener(function (newState) {
             idleStart = moment();
         } else if (idleState === 'active') {
             var idleMinutes = moment().diff(idleStart, 'minutes');
+            console.log('idleResetMinutes', config.idleResetMinutes);
+            console.log('idleMinutes', idleMinutes);
             if (idleMinutes > config.idleResetMinutes) {
                 createAlarm();
             }
