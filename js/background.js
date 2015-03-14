@@ -121,6 +121,12 @@ function getOutsideWorkingHours() {
 function handleAlarm() {
     if (getOutsideWorkingHours()) {
         createAlarm();
+    } else if (config.idleResetEnabled &&
+               ['idle', 'locked'].indexOf(idleState) > -1 &&
+               checkIdleMinutes()) {
+        // Prevent breaks when we've been idle for more than
+        // config.idleResetMinutes minutes
+        createAlarm();
     } else {
         if (config.notificationType === 'N') {
             createNotification();
@@ -161,12 +167,22 @@ chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
 // Set idle detection interval to 15 seconds
 chrome.idle.setDetectionInterval(15);
 
+function checkIdleMinutes() {
+    var idleMinutes = moment().diff(idleStart, 'minutes');
+    console.log('idleResetMinutes', config.idleResetMinutes);
+    console.log('idleMinutes', idleMinutes);
+    if (idleMinutes > config.idleResetMinutes) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 // Handle user state idle change
 chrome.idle.onStateChanged.addListener(function (newState) {
     console.log('idleResetEnabled', config.idleResetEnabled);
     if (config.idleResetEnabled) {
         idleState = newState;
-
         console.log('newState', newState, Date());
 
         // Reset countdown when returning from idle period of more than
@@ -174,10 +190,7 @@ chrome.idle.onStateChanged.addListener(function (newState) {
         if (['idle', 'locked'].indexOf(idleState) > -1) {
             idleStart = moment();
         } else if (idleState === 'active') {
-            var idleMinutes = moment().diff(idleStart, 'minutes');
-            console.log('idleResetMinutes', config.idleResetMinutes);
-            console.log('idleMinutes', idleMinutes);
-            if (idleMinutes > config.idleResetMinutes) {
+            if (checkIdleMinutes()) {
                 createAlarm();
             }
         }
