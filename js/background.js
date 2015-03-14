@@ -142,8 +142,7 @@ function getOutsideWorkingHours() {
         'HH:mm'
     );
     var now = moment();
-    nowDay = moment.format('ddd');
-    workingDayEnabled = getWorkingDayEnabled(nowDay);
+    workingDayEnabled = getWorkingDayEnabled(now.format('ddd'));
     return !(
         (workingDayEnabled) &&
         (workingHoursFrom <= now) &&
