@@ -13,6 +13,36 @@ var defaultConfig = {
     notificationType: 'F',
     workingHoursFrom: '09:00',
     workingHoursTo: '17:00',
+    workingHoursDays: [
+        {
+            name: 'Mon',
+            enabled: true
+        },
+        {
+            name: 'Tue',
+            enabled: true
+        },
+        {
+            name: 'Wed',
+            enabled: true
+        },
+        {
+            name: 'Thu',
+            enabled: true
+        },
+        {
+            name: 'Fri',
+            enabled: true
+        },
+        {
+            name: 'Sat',
+            enabled: false
+        },
+        {
+            name: 'Sun',
+            enabled: false
+        }
+    ],
     workingHoursEnabled: true,
     idleResetMinutes: 5,
     idleResetEnabled: true
@@ -112,10 +142,23 @@ function getOutsideWorkingHours() {
         'HH:mm'
     );
     var now = moment();
+    nowDay = moment.format('ddd');
+    workingDayEnabled = getWorkingDayEnabled(nowDay);
     return !(
+        (workingDayEnabled) &&
         (workingHoursFrom <= now) &&
         (now <= workingHoursTo)
     );
+}
+
+function getWorkingDayEnabled(day) {
+    workingDayEnabled = null;
+    config.workingHoursDays.forEach(function(whDay) {
+        if (whDay.name === day) {
+            workingDayEnabled = whDay.enabled;
+        }
+    });
+    return workingDayEnabled;
 }
 
 function handleAlarm() {

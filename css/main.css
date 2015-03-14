@@ -128,6 +128,7 @@ input.form-control {
 }
 
 .form-control.checkbox {
+    display: inline-block;
     width: 17px;
     height: 17px;
 }
@@ -138,7 +139,8 @@ input.form-control {
 
 .alert.save-alert {
     width: 400px;
-    position: absolute;
+    position: fixed;
+    z-index: 2;
     margin: auto;
     left: 0;
     right: 0;
@@ -148,4 +150,15 @@ input.form-control {
 .form-group.has-error,
 .form-group.has-error .help-block {
     color: #FD5E5A;
+}
+
+.day-input {
+    display: inline-block;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.day-input label {
+    display: inline-block;
+    width: 25px;
 }

@@ -16,7 +16,6 @@ angular.module('BreakTime', [])
     var service = {
         alarm: angular.copy(chrome.extension.getBackgroundPage().alarm),
         createAlarm: function(minutes) {
-            console.log('minutes', minutes);
             chrome.runtime.sendMessage({
                 event: "createAlarm",
                 minutes: minutes
@@ -88,11 +87,22 @@ angular.module('BreakTime', [])
             chrome.tabs.create({url: "templates/settings.html"});
         };
 
+        function getWorkingDayEnabled(day) {
+            workingDayEnabled = null;
+            ConfigService.config.workingHoursDays.forEach(function(whDay) {
+                if (whDay.name === day) {
+                    workingDayEnabled = whDay.enabled;
+                }
+            });
+            return workingDayEnabled;
+        }
+
         var updateCountdown = function() {
             $scope.now = moment();
             $scope.outsideWorkingHours = (
                 ConfigService.config.workingHoursEnabled &&
                 !(
+                    (getWorkingDayEnabled($scope.now.format('ddd'))) &&
                     ($scope.workingHoursFrom <= $scope.now) &&
                     ($scope.now <= $scope.workingHoursTo)
                 )
