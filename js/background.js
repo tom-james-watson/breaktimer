@@ -12,7 +12,7 @@ var defaultConfig = {
     length: 2,
     notificationType: 'F',
     workingHoursFrom: '09:00',
-    workingHoursTo: '17:00',
+    workingHoursTo: '17:30',
     workingHoursDays: [
         {
             name: 'Mon',
@@ -48,6 +48,15 @@ var defaultConfig = {
     idleResetEnabled: true
 };
 
+// Grab config from local storage or take defaultConfig
+chrome.storage.local.get('config', function(data) {
+    if (typeof(data.config) === 'undefined') {
+        setConfig(defaultConfig);
+    } else {
+        setConfig(data.config);
+    }
+});
+
 function clearFullscreenNotification() {
     clearInterval(fullscreenSetInterval);
     if (typeof(countdownId) !== 'undefined') {
@@ -74,6 +83,8 @@ function createFullscreen() {
 }
 
 function createFullscreenNotification() {
+    // Create a complex notification with countdown to fullscreen break
+
     var notificationOptions = {
         type: 'progress',
         iconUrl: 'image/icon128.png',
@@ -93,6 +104,8 @@ function createFullscreenNotification() {
         notificationOptions,
         function(newNotificationId) {
             countdownId = newNotificationId;
+
+            // Fill notification progress bar
             fullscreenSetInterval = setInterval(function() {
                 notificationOptions.progress += 10;
                 if (notificationOptions.progress == 100) {
@@ -110,6 +123,8 @@ function createFullscreenNotification() {
 }
 
 function createNotification() {
+    // Create simple alert notification
+
     chrome.notifications.create('reminder', {
         type: 'basic',
         iconUrl: 'image/icon128.png',
@@ -128,7 +143,7 @@ function createNotification() {
     }, 8000);
 }
 
-function getOutsideWorkingHours() {
+function checkOutsideWorkingHours() {
     if (config.workingHoursEnabled === false) {
         return false;
     }
@@ -161,7 +176,7 @@ function getWorkingDayEnabled(day) {
 }
 
 function handleAlarm() {
-    if (getOutsideWorkingHours()) {
+    if (checkOutsideWorkingHours()) {
         createAlarm();
     } else if (config.idleResetEnabled &&
                ['idle', 'locked'].indexOf(idleState) > -1 &&
@@ -210,9 +225,9 @@ chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
 chrome.idle.setDetectionInterval(15);
 
 function checkIdleMinutes() {
+    // Check if user has been idle for more than configured minutes
+
     var idleMinutes = moment().diff(idleStart, 'minutes');
-    console.log('idleResetMinutes', config.idleResetMinutes);
-    console.log('idleMinutes', idleMinutes);
     if (idleMinutes > config.idleResetMinutes) {
         return true;
     } else {
@@ -222,10 +237,8 @@ function checkIdleMinutes() {
 
 // Handle user state idle change
 chrome.idle.onStateChanged.addListener(function (newState) {
-    console.log('idleResetEnabled', config.idleResetEnabled);
     if (config.idleResetEnabled) {
         idleState = newState;
-        console.log('newState', newState, Date());
 
         // Reset countdown when returning from idle period of more than
         // config.idleResetMinutes minutes
@@ -295,20 +308,3 @@ chrome.runtime.onMessage.addListener(
         sendResponse({success: true});
     }
 );
-
-// Grab config from local storage or take defaultConfig
-chrome.storage.local.get('config', function(data) {
-    if (typeof(data.config) === 'undefined') {
-        setConfig(defaultConfig);
-    } else {
-        setConfig(data.config);
-    }
-});
-
-// Listen for changes to local storage config
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-    if (namespace === 'local' && 'config' in changes) {
-        setConfig(changes.config.newValue);
-    }
-});
-

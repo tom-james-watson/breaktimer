@@ -106,6 +106,8 @@ h1, h2, h3, h4, h5 {
     right: 0;
 }
 
+/* Settings */
+
 .settings .container {
     width: 700px;
     height: 500px;
@@ -137,16 +139,6 @@ input.form-control {
     width: 75px;
 }
 
-.alert.save-alert {
-    width: 400px;
-    position: fixed;
-    z-index: 2;
-    margin: auto;
-    left: 0;
-    right: 0;
-    text-align: center;
-}
-
 .form-group.has-error,
 .form-group.has-error .help-block {
     color: #FD5E5A;
@@ -161,4 +153,14 @@ input.form-control {
 .day-input label {
     display: inline-block;
     width: 25px;
+}
+
+.alert.save-alert {
+    width: 400px;
+    position: fixed;
+    z-index: 2;
+    margin: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
 }

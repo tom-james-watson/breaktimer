@@ -136,19 +136,21 @@ angular.module('BreakTime', [])
         $scope.showSaveConfirm = false;
 
         function toDate(time) {
+            // input type=time requires a Date
             return new Date('1970 01 01 ' + time);
         }
 
+        function grabTime(date) {
+            // Extract time string from time input
+            return moment($scope.workingHoursFrom).format('HH:mm');
+        }
+
         $scope.workingHoursFromChanged = function() {
-            $scope.config.workingHoursFrom = moment(
-                $scope.workingHoursFrom
-            ).format('HH:mm');
+            $scope.config.workingHoursFrom = grabTime($scope.workingHoursFrom);
         };
 
         $scope.workingHoursToChanged = function() {
-            $scope.config.workingHoursTo = moment(
-                $scope.workingHoursTo
-            ).format('HH:mm');
+            $scope.config.workingHoursTo = grabTime($scope.workingHoursTo);
         };
 
         $scope.checkOrder = function() {
@@ -166,7 +168,7 @@ angular.module('BreakTime', [])
             }, 3000);
         };
 
-        $scope.values = [{
+        $scope.notifTypes = [{
             id: 1,
             name: 'Notification',
             value: 'N'
@@ -176,23 +178,20 @@ angular.module('BreakTime', [])
             value: 'F'
         }];
 
-        for (var i=0; i < $scope.values.length; i++) {
-            if ($scope.values[i].value === $scope.config.notificationType) {
-                $scope.selected = $scope.values[i];
+        for (var i=0; i < $scope.notifTypes.length; i++) {
+            if ($scope.notifTypes[i].value === $scope.config.notificationType) {
+                $scope.selected = $scope.notifTypes[i];
             }
         }
 
-        $scope.selectNotify = function() {
+        $scope.selectNotifType = function() {
             $scope.config.notificationType = $scope.selected.value;
         };
 })
 .controller('BreakCtrl',
-    function($scope, $timeout) {
+    function($scope, $timeout, ConfigService) {
         $scope.countdown = null;
-        var breakEnd = moment().add(
-            chrome.extension.getBackgroundPage().config.length,
-            'minutes'
-        );
+        var breakEnd = moment().add(ConfigService.config.length, 'minutes');
 
         $scope.skip = function() {
             window.close();

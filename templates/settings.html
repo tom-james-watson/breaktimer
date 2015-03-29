@@ -5,6 +5,7 @@
         <title>Break Timer - Settings</title>
         <link rel="stylesheet" href="../css/bootstrap.min.css">
         <link rel="stylesheet" href="../css/main.css">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' rel='stylesheet' type='text/css'>
     </head>
     <body class="settings">
         <div class="container">
@@ -21,9 +22,9 @@
                                 <label for="break-frequency">Notify me with</label>
                                 <select
                                     class="form-control"
-                                    ng-options="item as item.name for item in values track by item.id"
+                                    ng-options="item as item.name for item in notifTypes track by item.id"
                                     ng-model="selected"
-                                    ng-change="selectNotify()"
+                                    ng-change="selectNotifType()"
                                 ></select>
                             </div>
                         </div>

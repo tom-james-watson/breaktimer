@@ -5,10 +5,12 @@
         <title>Break Timer</title>
         <link rel="stylesheet" href="../css/bootstrap.min.css">
         <link rel="stylesheet" href="../css/main.css">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' rel='stylesheet' type='text/css'>
     </head>
     <body>
         <div class="container">
             <div data-ng-controller="PopupCtrl">
+
                 <div ng-hide="outsideWorkingHours">
                     <div ng-show="alarm.alarm">
                         <h3>Next break in:</h3>
@@ -35,6 +37,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div ng-show="outsideWorkingHours">
                     <div class="spacer"></div>
                     <div class="spacer"></div>
@@ -42,6 +45,7 @@
                         <h2>Outside of working hours</h2>
                     </div>
                 </div>
+
                 <div class="actionbar">
                     <a class="glyphicon glyphicon-cog" ng-click="openSettings()" ng-show="outsideWorkingHours" href="#"></a>
                     <ul class="dropup" ng-hide="outsideWorkingHours">
