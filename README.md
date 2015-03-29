@@ -9,6 +9,7 @@ Break Timer allows you to customize:
 
 Break Timer will also intelligently restart your break countdown (optionally) when it detects that you have not been using the computer.
 
+## Screenshots
 
 ![Screenshot2](image/screenshot1.png)
 ---
