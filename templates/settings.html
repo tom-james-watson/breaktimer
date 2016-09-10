@@ -36,9 +36,14 @@
                                     ng-model="config.frequency" required/> <span>minutes</span>
                             </div>
                             <div class="form-group" ng-show="config.notificationType === 'F'">
-                                <label for="break-frequency">Break length</label>
+                                <label for="break-length">Break length</label>
                                 <input type="number" id="break-length" class="form-control min-input"
                                     ng-model="config.length" required/> <span>minutes</span>
+                            </div>
+                            <div class="form-group" ng-show="config.notificationType === 'F'">
+                                <label for="postpone">Postpone</label>
+                                <input type="number" id="postpone" class="form-control min-input"
+                                    ng-model="config.postpone" required/> <span>minutes</span>
                             </div>
                         </div>
                     </div>
