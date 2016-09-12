@@ -49,13 +49,10 @@ var defaultConfig = {
     idleResetEnabled: true
 };
 
-// Grab config from local storage or take defaultConfig
+// Grab config from local storage mergded with defaultConfig
 chrome.storage.local.get('config', function(data) {
-    if (typeof(data.config) === 'undefined') {
-        setConfig(defaultConfig);
-    } else {
-        setConfig(data.config);
-    }
+    var config = Object.assign({}, defaultConfig, data.config);
+    setConfig(config);
 });
 
 function clearFullscreenNotification() {
