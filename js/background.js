@@ -10,6 +10,7 @@ var fullscreenSetInterval;
 var defaultConfig = {
     frequency: 28,
     length: 2,
+    postpone: 3,
     notificationType: 'F',
     workingHoursFrom: '09:00',
     workingHoursTo: '17:30',
@@ -48,13 +49,10 @@ var defaultConfig = {
     idleResetEnabled: true
 };
 
-// Grab config from local storage or take defaultConfig
+// Grab config from local storage mergded with defaultConfig
 chrome.storage.local.get('config', function(data) {
-    if (typeof(data.config) === 'undefined') {
-        setConfig(defaultConfig);
-    } else {
-        setConfig(data.config);
-    }
+    var config = Object.assign({}, defaultConfig, data.config);
+    setConfig(config);
 });
 
 function clearFullscreenNotification() {
@@ -95,7 +93,7 @@ function createFullscreenNotification() {
         isClickable: true,
         buttons: [
             {title: 'Skip', iconUrl: 'image/skip.png'},
-            {title: 'Postpone 3 minutes', iconUrl: 'image/postpone.png'}
+            {title: 'Postpone ' + config.postpone + ' minutes', iconUrl: 'image/postpone.png'}
         ]
     };
 
@@ -216,7 +214,7 @@ chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
         } else if (buttonIndex === 1) {
             // Postpone
             clearFullscreenNotification();
-            createAlarm(3);
+            createAlarm(config.postpone);
         }
     }
 });

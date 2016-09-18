@@ -142,7 +142,7 @@ angular.module('BreakTime', [])
 
         function grabTime(date) {
             // Extract time string from time input
-            return moment($scope.workingHoursFrom).format('HH:mm');
+            return moment(date).format('HH:mm');
         }
 
         $scope.workingHoursFromChanged = function() {
