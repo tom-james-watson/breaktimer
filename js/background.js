@@ -105,7 +105,7 @@ function createFullscreenNotification() {
 
             // Fill notification progress bar
             fullscreenSetInterval = setInterval(function() {
-                notificationOptions.progress += 10;
+                notificationOptions.progress += 5;
                 if (notificationOptions.progress == 100) {
                    createFullscreen();
                 }
@@ -116,7 +116,7 @@ function createFullscreenNotification() {
                         function() {}
                     );
                 }
-            }, 2000);
+            }, 1000);
         });
 }
 
