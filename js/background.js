@@ -68,7 +68,7 @@ function createFullscreen() {
     chrome.windows.create(
         {
             url: '../templates/break.html',
-            type: 'detached_panel',
+            type: 'panel',
             focused: true
         },
         function(breakWindow) {
