@@ -46,7 +46,8 @@ var defaultConfig = {
     ],
     workingHoursEnabled: true,
     idleResetMinutes: 5,
-    idleResetEnabled: true
+    idleResetEnabled: true,
+    breaksEnabled: true
 };
 
 // Grab config from local storage mergded with defaultConfig
@@ -282,7 +283,11 @@ function setConfig(newConfig) {
     chrome.storage.local.set({
         config: newConfig
     });
-    createAlarm();
+
+    console.log({config})
+    if (config.breaksEnabled) {
+        createAlarm();
+    }
 }
 
 // Handle runtime messages from other pages in the app
