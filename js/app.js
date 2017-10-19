@@ -66,12 +66,12 @@ angular.module('BreakTime', [])
         $scope.toggleBreaksOn = function() {
             const config = angular.copy(ConfigService.config);
 
-            console.log('toggleBreaksOn')
             if ($scope.alarm.alarm) {
-                console.log('1111')
                 config.breaksEnabled = false;
+                chrome.runtime.sendMessage({
+                    event: "clearFullscreenNotification"
+                }, function(response) {});
             } else {
-                console.log('22222')
                 config.breaksEnabled = true;
             }
             ConfigService.config = config;

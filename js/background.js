@@ -284,7 +284,6 @@ function setConfig(newConfig) {
         config: newConfig
     });
 
-    console.log({config})
     if (config.breaksEnabled) {
         createAlarm();
     }
@@ -296,6 +295,9 @@ chrome.runtime.onMessage.addListener(
         switch (request.event) {
             case 'setConfig':
                 setConfig(request.config);
+                break;
+            case 'clearFullscreenNotification':
+                clearFullscreenNotification()
                 break;
             case 'createAlarm':
                 createAlarm(request.minutes);
