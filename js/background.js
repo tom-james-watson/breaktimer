@@ -54,6 +54,7 @@ var defaultConfig = {
     backgroundColor: '#16a085',
     textColor: '#ffffff',
     allowEndBreak: true,
+    allowSkipPostponeBreak: true,
 };
 
 // Grab config from local storage mergded with defaultConfig
@@ -96,14 +97,17 @@ function createFullscreenNotification() {
         iconUrl: 'image/icon128.png',
         progress: 0,
         priority: 2,
-        title: 'Time for a break!',
+        title: config.breakText,
         message: 'Break about to start...',
         isClickable: true,
-        buttons: [
+    };
+
+    if (config.allowSkipPostponeBreak) {
+        notificationOptions.buttons = [
             {title: 'Skip', iconUrl: 'image/skip.png'},
             {title: 'Postpone ' + config.postpone + ' minutes', iconUrl: 'image/postpone.png'}
         ]
-    };
+    }
 
     chrome.notifications.create(
         'countdown',
