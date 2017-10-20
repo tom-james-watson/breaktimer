@@ -202,6 +202,7 @@ angular.module('BreakTime', [])
         $scope.breakText = ConfigService.config.breakText;
         $scope.breakMessage = ConfigService.config.breakMessage;
         $scope.backgroundColor = ConfigService.config.backgroundColor;
+        $scope.allowEndBreak = ConfigService.config.allowEndBreak;
         var breakEnd = moment().add(ConfigService.config.length, 'minutes');
 
         $scope.skip = function() {
@@ -227,11 +228,15 @@ angular.module('BreakTime', [])
         updateCountdown();
 
         // Close window on Esc or F11
-        window.onkeydown = function(e) {
-            if (e.keyCode == 27 || e.keyCode == 122) {
+        const handleKeyPress = function(e) {
+            if ($scope.allowEndBreak && (e.keyCode == 27 || e.keyCode == 122)) {
                 window.close();
             }
+            e.preventDefault();
         };
+        window.onkeydown = handleKeyPress;
+        window.onkeypress = handleKeyPress;
+        window.onkeyup = handleKeyPress;
 })
 .filter('digits',
     function() {
