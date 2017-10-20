@@ -52,6 +52,7 @@ var defaultConfig = {
     breakText: 'Time for a break!',
     breakMessage: 'Rest your eyes. Stretch your legs. Breathe. Relax.',
     backgroundColor: '#16a085',
+    textColor: '#ffffff',
     allowEndBreak: true,
 };
 

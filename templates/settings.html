@@ -13,6 +13,7 @@
                 <style>
                     body {
                         background: {{ config.backgroundColor }};
+                        color: {{ config.textColor }};
                     }
                 </style>
                 <div class="alert alert-info save-alert" ng-show="showSaveConfirm">
@@ -64,6 +65,18 @@
                         <div class="col-md-6">
                             <h3>Customization</h3>
                             <div class="form-group">
+                                <label for="background-color">Background Color</label>
+                                <input type="text" id="background-color" class="form-control"
+                                    ng-model="config.backgroundColor"/>
+                                <input type="color" ng-model="config.backgroundColor"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="text-color">Text Color</label>
+                                <input type="text" id="text-color" class="form-control"
+                                    ng-model="config.textColor"/>
+                                <input type="color" ng-model="config.textColor"/>
+                            </div>
+                            <div class="form-group">
                                 <label for="break-text">Break Title</label>
                                 <input type="text" id="break-text" class="form-control"
                                     ng-model="config.breakText"/>
@@ -72,12 +85,6 @@
                                 <label for="break-message">Break Message</label>
                                 <input type="text" id="break-message" class="form-control"
                                     ng-model="config.breakMessage"/>
-                            </div>
-                            <div class="form-group">
-                                <label for="background-color">Background Color</label>
-                                <input type="text" id="background-color" class="form-control"
-                                    ng-model="config.backgroundColor"/>
-                                <input type="color" ng-model="config.backgroundColor"/>
                             </div>
                         </div>
                     </div>
