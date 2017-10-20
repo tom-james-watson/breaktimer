@@ -5,29 +5,42 @@
         <title>Break Time</title>
         <link rel="stylesheet" href="../css/bootstrap.min.css">
         <link rel="stylesheet" href="../css/main.css">
+        <style>
+            body {
+                background: "{{ backgroundColor }}";
+            }
+        </style>
+
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' rel='stylesheet' type='text/css'>
     </head>
     <body class="break">
         <div class="container">
             <div data-ng-controller="BreakCtrl">
+                <style>
+                    body {
+                        background: {{ backgroundColor }};
+                    }
+                </style>
                 <div>
-                    <h3>Time for a break!</h3>
+                  <h3 ng-show="breakText">{{ breakText }}</h3>
                     <div id="countdown" class="center">
                         <h1 ng-show="countdown">{{ countdown.hours | digits:2 }}<span class="time-unit">h</span> : {{ countdown.minutes | digits:2 }}<span class="time-unit">m</span> : {{ countdown.seconds | digits:2 }}<span class="time-unit">s</span> </h1>
                         <h1 ng-hide="countdown">
                             ...
                         </h1>
                     </div>
-                    <div class="spacer"></div>
                     <div class="center">
                         <button type="button" class="btn btn-danger" ng-click="skip()">
                             End Break
                         </button>
                     </div>
+                    <div class="spacer"></div>
+                    <div>
+                        {{ breakMessage }}
+                    </div>
                 </div>
             </div>
         </div>
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' rel='stylesheet' type='text/css'>
         <script src="../js/vendor/angular.min.js"></script>
         <script src="../js/vendor/moment.min.js"></script>
         <script src="../js/vendor/countdown.min.js"></script>

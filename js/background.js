@@ -47,13 +47,17 @@ var defaultConfig = {
     workingHoursEnabled: true,
     idleResetMinutes: 5,
     idleResetEnabled: true,
-    breaksEnabled: true
+    breaksEnabled: true,
+    gongEnabled: true,
+    breakText: 'Time for a break!',
+    breakMessage: 'Rest your eyes. Stretch your legs. Breathe. Relax.',
+    backgroundColor: '#16a085',
 };
 
 // Grab config from local storage mergded with defaultConfig
 chrome.storage.local.get('config', function(data) {
-    var config = Object.assign({}, defaultConfig, data.config);
-    setConfig(config);
+    let localConfig = Object.assign({}, defaultConfig, data.config);
+    setConfig(localConfig);
 });
 
 function clearFullscreenNotification() {
@@ -65,6 +69,7 @@ function clearFullscreenNotification() {
 
 function createFullscreen() {
     clearFullscreenNotification();
+    playGong();
 
     chrome.windows.create(
         {
@@ -124,11 +129,13 @@ function createFullscreenNotification() {
 function createNotification() {
     // Create simple alert notification
 
+    playGong();
+
     chrome.notifications.create('reminder', {
         type: 'basic',
         iconUrl: 'image/icon128.png',
-        title: 'Time for a break!',
-        message: 'Rest your eyes. Stretch your legs. Breathe. Relax.'
+        title: config.breakText,
+        message: config.breakMessage,
     }, function(newNotificationId) {
         notificationId = newNotificationId;
     });
@@ -189,6 +196,14 @@ function handleAlarm() {
         } else if (config.notificationType === 'F') {
             createFullscreenNotification();
         }
+    }
+}
+
+function playGong() {
+    if (config.gongEnabled) {
+        const gongAudio = new Audio();
+        gongAudio.src = '../sounds/gong.wav';
+        gongAudio.play();
     }
 }
 
@@ -254,6 +269,7 @@ chrome.idle.onStateChanged.addListener(function (newState) {
 // Create a new alarm when the break window is closed
 chrome.windows.onRemoved.addListener(function(windowId) {
     if (windowId === breakId) {
+        playGong();
         createAlarm();
     }
 });

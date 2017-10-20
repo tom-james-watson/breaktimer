@@ -54,6 +54,7 @@ angular.module('BreakTime', [])
             ConfigService.config.workingHoursTo,
             'HH:mm'
         );
+        $scope.backgroundColor = ConfigService.config.backgroundColor;
 
         $scope.countdown = null;
         $scope.alarm = AlarmService;
@@ -198,6 +199,9 @@ angular.module('BreakTime', [])
 .controller('BreakCtrl',
     function($scope, $timeout, ConfigService) {
         $scope.countdown = null;
+        $scope.breakText = ConfigService.config.breakText;
+        $scope.breakMessage = ConfigService.config.breakMessage;
+        $scope.backgroundColor = ConfigService.config.backgroundColor;
         var breakEnd = moment().add(ConfigService.config.length, 'minutes');
 
         $scope.skip = function() {
