@@ -213,6 +213,14 @@ function playGong() {
     }
 }
 
+function playGongLow() {
+    if (config.gongEnabled) {
+        const gongAudio = new Audio();
+        gongAudio.src = '../sounds/gong_low.wav';
+        gongAudio.play();
+    }
+}
+
 function startBreak() {
     if (config.notificationType === 'N') {
         createNotification();
@@ -275,7 +283,7 @@ chrome.idle.onStateChanged.addListener(function (newState) {
 // Create a new alarm when the break window is closed
 chrome.windows.onRemoved.addListener(function(windowId) {
     if (windowId === breakId) {
-        playGong();
+        playGongLow();
         createAlarm();
     }
 });
