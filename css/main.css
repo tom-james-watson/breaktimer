@@ -1,5 +1,15 @@
 @charset "UTF-8";
 
+#settings-ctrl {
+  position: relative;
+}
+
+#donate {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak],
 .ng-cloak, .x-ng-cloak,
 .ng-hide {
