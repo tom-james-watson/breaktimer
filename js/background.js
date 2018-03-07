@@ -54,7 +54,8 @@ var defaultConfig = {
     backgroundColor: '#16a085',
     textColor: '#ffffff',
     allowEndBreak: true,
-    allowSkipPostponeBreak: true,
+    allowSkipBreak: true,
+    allowPostponeBreak: true,
 };
 
 // Grab config from local storage mergded with defaultConfig
@@ -102,11 +103,18 @@ function createFullscreenNotification() {
         isClickable: true,
     };
 
-    if (config.allowSkipPostponeBreak) {
-        notificationOptions.buttons = [
-            {title: 'Skip', iconUrl: 'image/skip.png'},
-            {title: 'Postpone ' + config.postpone + ' minutes', iconUrl: 'image/postpone.png'}
-        ]
+    if (config.allowSkipBreak || config.allowPostponeBreak) {
+        notificationOptions.buttons = []
+        if (config.allowSkipBreak) {
+            notificationOptions.buttons.push(
+                {title: 'Skip', iconUrl: 'image/skip.png'},
+            )
+        }
+        if (config.allowPostponeBreak) {
+            notificationOptions.buttons.push(
+                {title: 'Postpone ' + config.postpone + ' minutes', iconUrl: 'image/postpone.png'}
+            )
+        }
     }
 
     chrome.notifications.create(
