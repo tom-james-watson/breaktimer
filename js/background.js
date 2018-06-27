@@ -244,15 +244,31 @@ chrome.notifications.onClicked.addListener(function(id) {
 
 // When the user clicks on a notification button, handle it
 chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
+    function skip() {
+        clearFullscreenNotification();
+        createAlarm();
+    }
+
+    function postpone() {
+        clearFullscreenNotification();
+        createAlarm(config.postpone);
+    }
+
     if (id === countdownId) {
-        if (buttonIndex === 0) {
-            // Skip
-            clearFullscreenNotification();
-            createAlarm();
-        } else if (buttonIndex === 1) {
-            // Postpone
-            clearFullscreenNotification();
-            createAlarm(config.postpone);
+        if (config.allowSkipBreak && config.allowPostponeBreak) {
+            if (buttonIndex === 0) {
+                skip()
+            } else if (buttonIndex === 1) {
+                postpone()
+            }
+        } else if (!config.allowSkipBreak && config.allowPostponeBreak) {
+            if (buttonIndex === 0) {
+                postpone()
+            }
+        } else if (config.allowSkipBreak && !config.allowPostponeBreak) {
+            if (buttonIndex === 0) {
+                skip()
+            }
         }
     }
 });
