@@ -11,7 +11,6 @@ var defaultConfig = {
     frequency: 28,
     length: 2,
     postpone: 3,
-    notificationType: 'F',
     workingHoursFrom: '09:00',
     workingHoursTo: '17:30',
     workingHoursDays: [
@@ -69,75 +68,6 @@ function clearFullscreenNotification() {
     if (typeof(countdownId) !== 'undefined') {
         chrome.notifications.clear(countdownId, function() {});
     }
-}
-
-function createFullscreen() {
-    clearFullscreenNotification();
-    playGong();
-
-    chrome.windows.create(
-        {
-            url: '../templates/break.html',
-            type: 'panel',
-            focused: true
-        },
-        function(breakWindow) {
-            breakId = breakWindow.id;
-            chrome.windows.update(breakWindow.id, {
-                state: 'fullscreen'
-            });
-        }
-    );
-}
-
-function createFullscreenNotification() {
-    // Create a complex notification with countdown to fullscreen break
-
-    var notificationOptions = {
-        type: 'progress',
-        iconUrl: 'image/icon128.png',
-        progress: 0,
-        priority: 2,
-        title: config.breakText,
-        message: 'Break about to start...',
-        isClickable: true,
-    };
-
-    if (config.allowSkipBreak || config.allowPostponeBreak) {
-        notificationOptions.buttons = []
-        if (config.allowSkipBreak) {
-            notificationOptions.buttons.push(
-                {title: 'Skip', iconUrl: 'image/skip.png'},
-            )
-        }
-        if (config.allowPostponeBreak) {
-            notificationOptions.buttons.push(
-                {title: 'Postpone ' + config.postpone + ' minutes', iconUrl: 'image/postpone.png'}
-            )
-        }
-    }
-
-    chrome.notifications.create(
-        'countdown',
-        notificationOptions,
-        function(newNotificationId) {
-            countdownId = newNotificationId;
-
-            // Fill notification progress bar
-            fullscreenSetInterval = setInterval(function() {
-                notificationOptions.progress += 5;
-                if (notificationOptions.progress == 100) {
-                   createFullscreen();
-                }
-                else {
-                    chrome.notifications.update(
-                        countdownId,
-                        notificationOptions,
-                        function() {}
-                    );
-                }
-            }, 1000);
-        });
 }
 
 function createNotification() {
@@ -205,11 +135,7 @@ function handleAlarm() {
         // config.idleResetMinutes minutes
         createAlarm();
     } else {
-        if (config.notificationType === 'N') {
-            createNotification();
-        } else if (config.notificationType === 'F') {
-            createFullscreenNotification();
-        }
+        createNotification();
     }
 }
 
@@ -230,45 +156,24 @@ function playGongLow() {
 }
 
 function startBreak() {
-    if (config.notificationType === 'N') {
-        createNotification();
-    } else if (config.notificationType === 'F') {
-        createFullscreen();
-    }
+    createNotification();
 }
 
 // When the user clicks on the notification, close it
-chrome.notifications.onClicked.addListener(function(id) {
+chrome.notifications.onClosed.addListener(function(id) {
     chrome.notifications.clear(id, function() {});
 });
 
 // When the user clicks on a notification button, handle it
-chrome.notifications.onButtonClicked.addListener(function(id, buttonIndex) {
-    function skip() {
-        clearFullscreenNotification();
-        createAlarm();
-    }
-
+chrome.notifications.onClicked.addListener(function(id) {
     function postpone() {
         clearFullscreenNotification();
         createAlarm(config.postpone);
     }
 
     if (id === countdownId) {
-        if (config.allowSkipBreak && config.allowPostponeBreak) {
-            if (buttonIndex === 0) {
-                skip()
-            } else if (buttonIndex === 1) {
+        if (config.allowPostponeBreak) {
                 postpone()
-            }
-        } else if (!config.allowSkipBreak && config.allowPostponeBreak) {
-            if (buttonIndex === 0) {
-                postpone()
-            }
-        } else if (config.allowSkipBreak && !config.allowPostponeBreak) {
-            if (buttonIndex === 0) {
-                skip()
-            }
         }
     }
 });
@@ -351,7 +256,7 @@ chrome.runtime.onMessage.addListener(
                 setConfig(request.config);
                 break;
             case 'clearFullscreenNotification':
-                clearFullscreenNotification()
+                clearFullscreenNotification();
                 break;
             case 'createAlarm':
                 createAlarm(request.minutes);

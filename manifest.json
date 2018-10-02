@@ -27,7 +27,7 @@
         "notifications",
         "idle"
     ],
-    "offline_enabled": true,
-    "minimum_chrome_version": "32",
-    "options_page": "templates/settings.html"
+    "options_ui": {
+        "page": "settings.html"
+    }
 }

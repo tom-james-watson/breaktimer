@@ -93,7 +93,7 @@ angular.module('BreakTime', [])
         };
 
         $scope.openSettings = function() {
-            chrome.tabs.create({url: "templates/settings.html"});
+            chrome.tabs.create({url: "settings.html"});
         };
 
         function getWorkingDayEnabled(day) {
@@ -181,10 +181,6 @@ angular.module('BreakTime', [])
             id: 1,
             name: 'Notification',
             value: 'N'
-        }, {
-            id: 2,
-            name: 'Fullscreen popup',
-            value: 'F'
         }];
 
         for (var i=0; i < $scope.notifTypes.length; i++) {
