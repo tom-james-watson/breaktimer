@@ -6,7 +6,13 @@ var idleState = 'active';
 var idleStart;
 var alarmName = 'breakAlarm';
 var fullscreenSetInterval;
+var fullscreenTimeout;
 var isFirefox = navigator.userAgent.indexOf("Firefox") > -1
+var os
+chrome.runtime.getPlatformInfo(function(info) {
+  os = info.os;
+  console.log({os})
+});
 
 var defaultConfig = {
   frequency: 28,
@@ -66,6 +72,7 @@ chrome.storage.local.get('config', function(data) {
 });
 
 function clearFullscreenNotification() {
+  clearTimeout(fullscreenTimeout);
   clearInterval(fullscreenSetInterval);
   if (typeof(countdownId) !== 'undefined') {
     chrome.notifications.clear(countdownId, function() {});
@@ -104,14 +111,18 @@ function createFullscreenNotification() {
   if (!isFirefox) {
 
     notificationOptions = {
-      type: 'progress',
+      type: os === 'mac' ? 'basic' : 'progress',
+      requireInteraction: true,
       iconUrl: 'image/icon128.png',
-      progress: 0,
       priority: 2,
       title: config.breakText,
       message: 'Break about to start...',
       isClickable: true,
     };
+
+    if (os !== 'mac') {
+      notificationOptions.progress = 0
+    }
 
     if (config.allowSkipBreak || config.allowPostponeBreak) {
       notificationOptions.buttons = []
@@ -132,6 +143,13 @@ function createFullscreenNotification() {
       notificationOptions,
       function(newNotificationId) {
         countdownId = newNotificationId;
+
+        if (os === 'mac') {
+          fullscreenTimeout = setTimeout(function() {
+            createFullscreen();
+          }, 10000);
+          return
+        }
 
         // Fill notification progress bar
         fullscreenSetInterval = setInterval(function() {
@@ -164,7 +182,7 @@ function createFullscreenNotification() {
       'countdown',
       notificationOptions,
       function(newNotificationId) {
-        fullscreenSetInterval = setTimeout(function() {
+        setTimeout(function() {
           createFullscreen();
         }, 5000);
       });
@@ -354,6 +372,9 @@ function createAlarm(minutes) {
   if (typeof(minutes) === 'undefined') {
     minutes = Number(config.frequency);
   }
+
+  // TODO - remove
+  minutes = 0.1
 
   chrome.alarms.create(alarmName, {
     delayInMinutes: minutes
