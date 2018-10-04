@@ -6,6 +6,7 @@ var idleState = 'active';
 var idleStart;
 var alarmName = 'breakAlarm';
 var fullscreenSetInterval;
+var isFirefox = navigator.userAgent.indexOf("Firefox") > -1
 
 var defaultConfig = {
   frequency: 28,
@@ -75,12 +76,17 @@ function createFullscreen() {
   clearFullscreenNotification();
   playGong();
 
+  const opts =  {
+    url: '../templates/break.html',
+    type: 'panel',
+  }
+
+  if (!isFirefox) {
+    opts.focused = true
+  }
+
   chrome.windows.create(
-    {
-      url: '../templates/break.html',
-      type: 'panel',
-      focused: true
-    },
+    opts,
     function(breakWindow) {
       breakId = breakWindow.id;
       chrome.windows.update(breakWindow.id, {
@@ -93,51 +99,77 @@ function createFullscreen() {
 function createFullscreenNotification() {
   // Create a complex notification with countdown to fullscreen break
 
-  var notificationOptions = {
-    type: 'progress',
-    iconUrl: 'image/icon128.png',
-    progress: 0,
-    priority: 2,
-    title: config.breakText,
-    message: 'Break about to start...',
-    isClickable: true,
-  };
+  let notificationOptions
 
-  if (config.allowSkipBreak || config.allowPostponeBreak) {
-    notificationOptions.buttons = []
-    if (config.allowSkipBreak) {
-      notificationOptions.buttons.push(
-        {title: 'Skip', iconUrl: 'image/skip.png'},
-      )
+  if (!isFirefox) {
+
+    notificationOptions = {
+      type: 'progress',
+      iconUrl: 'image/icon128.png',
+      progress: 0,
+      priority: 2,
+      title: config.breakText,
+      message: 'Break about to start...',
+      isClickable: true,
+    };
+
+    if (config.allowSkipBreak || config.allowPostponeBreak) {
+      notificationOptions.buttons = []
+      if (config.allowSkipBreak) {
+        notificationOptions.buttons.push(
+          {title: 'Skip', iconUrl: 'image/skip.png'},
+        )
+      }
+      if (config.allowPostponeBreak) {
+        notificationOptions.buttons.push(
+          {title: 'Postpone ' + config.postpone + ' minutes', iconUrl: 'image/postpone.png'}
+        )
+      }
     }
-    if (config.allowPostponeBreak) {
-      notificationOptions.buttons.push(
-        {title: 'Postpone ' + config.postpone + ' minutes', iconUrl: 'image/postpone.png'}
-      )
-    }
-  }
 
-  chrome.notifications.create(
-    'countdown',
-    notificationOptions,
-    function(newNotificationId) {
-      countdownId = newNotificationId;
+    chrome.notifications.create(
+      'countdown',
+      notificationOptions,
+      function(newNotificationId) {
+        countdownId = newNotificationId;
 
-      // Fill notification progress bar
-      fullscreenSetInterval = setInterval(function() {
-        notificationOptions.progress += 5;
-        if (notificationOptions.progress == 100) {
+        // Fill notification progress bar
+        fullscreenSetInterval = setInterval(function() {
+          notificationOptions.progress += 5;
+          if (notificationOptions.progress == 100) {
+            createFullscreen();
+          }
+          else {
+            chrome.notifications.update(
+              countdownId,
+              notificationOptions,
+              function() {}
+            );
+          }
+        }, 1000);
+      });
+
+  } else {
+
+    // Unfortunately, more advanced options are currently unimplemented in
+    // Firefox - // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/notifications/NotificationOptions
+    notificationOptions = {
+      type: 'basic',
+      iconUrl: 'image/icon128.png',
+      title: config.breakText,
+      message: 'Break about to start...'
+    };
+
+    browser.notifications.create(
+      'countdown',
+      notificationOptions,
+      function(newNotificationId) {
+        fullscreenSetInterval = setTimeout(function() {
           createFullscreen();
-        }
-        else {
-          chrome.notifications.update(
-            countdownId,
-            notificationOptions,
-            function() {}
-          );
-        }
-      }, 1000);
-    });
+        }, 5000);
+      });
+
+  }
 }
 
 function createNotification() {
@@ -237,6 +269,10 @@ function startBreak() {
   }
 }
 
+function endBreak() {
+  chrome.windows.remove(breakId)
+}
+
 // When the user clicks on the notification, close it
 chrome.notifications.onClicked.addListener(function(id) {
   chrome.notifications.clear(id, function() {});
@@ -318,6 +354,7 @@ function createAlarm(minutes) {
   if (typeof(minutes) === 'undefined') {
     minutes = Number(config.frequency);
   }
+
   chrome.alarms.create(alarmName, {
     delayInMinutes: minutes
   });
@@ -362,6 +399,9 @@ chrome.runtime.onMessage.addListener(
         break;
       case 'startBreak':
         startBreak();
+        break;
+      case 'endBreak':
+        endBreak();
         break;
     }
     sendResponse({success: true});

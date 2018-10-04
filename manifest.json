@@ -28,5 +28,8 @@
     "idle"
   ],
   "minimum_chrome_version": "32",
-  "options_page": "templates/settings.html"
+  "options_ui": {
+    "page": "templates/settings.html",
+    "chrome_style": true
+  }
 }

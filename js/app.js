@@ -93,7 +93,7 @@ angular.module('BreakTime', [])
       };
 
       $scope.openSettings = function() {
-        chrome.tabs.create({url: "templates/settings.html"});
+        chrome.tabs.create({url: "/templates/settings.html"});
       };
 
       function getWorkingDayEnabled(day) {
@@ -138,6 +138,7 @@ angular.module('BreakTime', [])
   .controller('SettingsCtrl',
     function($scope, ConfigService, AlarmService, $timeout) {
       $scope.config = angular.copy(ConfigService.config);
+      $scope.isFirefox = navigator.userAgent.indexOf("Firefox") > -1
 
       $scope.workingHoursFrom = toDate($scope.config.workingHoursFrom);
       $scope.workingHoursTo = toDate($scope.config.workingHoursTo);
@@ -208,7 +209,7 @@ angular.module('BreakTime', [])
       var breakEnd = moment().add(ConfigService.config.length, 'minutes');
 
       $scope.skip = function() {
-        window.close();
+        chrome.runtime.sendMessage({event: "endBreak"});
       };
 
       var updateCountdown = function() {
@@ -216,7 +217,7 @@ angular.module('BreakTime', [])
           var now = moment();
 
           if (now > breakEnd) {
-            window.close();
+            $scope.skip();
           } else {
             $scope.countdown = breakEnd.countdown(
               now,
@@ -232,7 +233,7 @@ angular.module('BreakTime', [])
       // Close window on Esc or F11
       const handleKeyPress = function(e) {
         if ($scope.allowEndBreak && (e.keyCode == 27 || e.keyCode == 122)) {
-          window.close();
+          $scope.skip();
         }
         e.preventDefault();
       };

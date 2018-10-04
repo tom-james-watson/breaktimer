@@ -157,6 +157,11 @@ input.form-control {
   color: #FD5E5A;
 }
 
+input[type='color'] {
+  padding: 3px 2px;
+  width: 40px;
+}
+
 .day-input {
   display: inline-block;
   padding-left: 10px;
