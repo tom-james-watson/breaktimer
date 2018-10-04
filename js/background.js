@@ -5,14 +5,8 @@ var config = {};
 var idleState = 'active';
 var idleStart;
 var alarmName = 'breakAlarm';
-var fullscreenSetInterval;
 var fullscreenTimeout;
 var isFirefox = navigator.userAgent.indexOf("Firefox") > -1
-var os
-chrome.runtime.getPlatformInfo(function(info) {
-  os = info.os;
-  console.log({os})
-});
 
 var defaultConfig = {
   frequency: 28,
@@ -73,7 +67,6 @@ chrome.storage.local.get('config', function(data) {
 
 function clearFullscreenNotification() {
   clearTimeout(fullscreenTimeout);
-  clearInterval(fullscreenSetInterval);
   if (typeof(countdownId) !== 'undefined') {
     chrome.notifications.clear(countdownId, function() {});
   }
@@ -111,7 +104,7 @@ function createFullscreenNotification() {
   if (!isFirefox) {
 
     notificationOptions = {
-      type: os === 'mac' ? 'basic' : 'progress',
+      type: 'basic',
       requireInteraction: true,
       iconUrl: 'image/icon128.png',
       priority: 2,
@@ -119,10 +112,6 @@ function createFullscreenNotification() {
       message: 'Break about to start...',
       isClickable: true,
     };
-
-    if (os !== 'mac') {
-      notificationOptions.progress = 0
-    }
 
     if (config.allowSkipBreak || config.allowPostponeBreak) {
       notificationOptions.buttons = []
@@ -144,27 +133,9 @@ function createFullscreenNotification() {
       function(newNotificationId) {
         countdownId = newNotificationId;
 
-        if (os === 'mac') {
-          fullscreenTimeout = setTimeout(function() {
-            createFullscreen();
-          }, 10000);
-          return
-        }
-
-        // Fill notification progress bar
-        fullscreenSetInterval = setInterval(function() {
-          notificationOptions.progress += 5;
-          if (notificationOptions.progress == 100) {
-            createFullscreen();
-          }
-          else {
-            chrome.notifications.update(
-              countdownId,
-              notificationOptions,
-              function() {}
-            );
-          }
-        }, 1000);
+        fullscreenTimeout = setTimeout(function() {
+          createFullscreen();
+        }, 10000);
       });
 
   } else {
@@ -372,9 +343,6 @@ function createAlarm(minutes) {
   if (typeof(minutes) === 'undefined') {
     minutes = Number(config.frequency);
   }
-
-  // TODO - remove
-  minutes = 0.1
 
   chrome.alarms.create(alarmName, {
     delayInMinutes: minutes
