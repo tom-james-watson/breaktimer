@@ -153,6 +153,8 @@ function createFullscreenNotification() {
       'countdown',
       notificationOptions,
       function(newNotificationId) {
+        countdownId = newNotificationId;
+
         setTimeout(function() {
           createFullscreen();
         }, 5000);
