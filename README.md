@@ -1,4 +1,8 @@
-# [Break Timer](https://chrome.google.com/webstore/detail/break-timer/hklkdbpicdmlpoiellngedpejjkmapei)
+# Break Timer
+
+[Chrome extension](https://chrome.google.com/webstore/detail/break-timer/hklkdbpicdmlpoiellngedpejjkmapei)
+
+[Firefox addon](https://addons.mozilla.org/en-US/firefox/addon/break-timer-app/)
 
 Break Timer allows you to set up customizable breaks and will remind you to take them. Taking breaks whilst working or studying is crucial in preventing RSI, eye-strain and tiredness.
 
