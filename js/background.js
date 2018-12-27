@@ -57,6 +57,7 @@ var defaultConfig = {
   allowEndBreak: true,
   allowSkipBreak: true,
   allowPostponeBreak: true,
+  allowNotifications: true
 };
 
 // Grab config from local storage mergded with defaultConfig
@@ -127,17 +128,20 @@ function createFullscreenNotification() {
       }
     }
 
-    chrome.notifications.create(
-      'countdown',
-      notificationOptions,
-      function(newNotificationId) {
-        countdownId = newNotificationId;
+    if(config.allowNotifications){
+      chrome.notifications.create(
+        'countdown',
+        notificationOptions,
+        function(newNotificationId) {
+          countdownId = newNotificationId;
 
-        fullscreenTimeout = setTimeout(function() {
-          createFullscreen();
-        }, 10000);
-      });
-
+          fullscreenTimeout = setTimeout(function() {
+            createFullscreen();
+          }, 10000);
+        });
+    } else {
+      createFullscreen();
+    }
   } else {
 
     // Unfortunately, more advanced options are currently unimplemented in
@@ -148,18 +152,21 @@ function createFullscreenNotification() {
       title: config.breakText,
       message: 'Break about to start...'
     };
+    if (config.allowNotifications) {
+      browser.notifications.create(
+        'countdown',
+        notificationOptions,
+        function(newNotificationId) {
+          countdownId = newNotificationId;
 
-    browser.notifications.create(
-      'countdown',
-      notificationOptions,
-      function(newNotificationId) {
-        countdownId = newNotificationId;
-
-        setTimeout(function() {
-          createFullscreen();
-        }, 5000);
-      });
-
+          setTimeout(function() {
+            createFullscreen();
+          }, 5000);
+        }
+      );
+    } else {
+      createFullscreen();
+    }
   }
 }
 

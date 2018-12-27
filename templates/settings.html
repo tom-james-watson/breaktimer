@@ -64,12 +64,16 @@ body {
                                        class="form-control checkbox" ng-model="config.gongEnabled"/>
               </div>
               <div class="form-group" ng-show="config.notificationType === 'F' && !isFirefox">
-                <label for="allow-skip-postpone-break">Allow Skip Break</label>
+                <label for="allow-notification">Allow Notifications</label>
+                <input type="checkbox" id="allow-notifications" class="form-control checkbox" ng-model="config.allowNotifications" />
+              </div>
+              <div class="form-group" ng-show="config.notificationType === 'F' && !isFirefox">
+                <label for="allow-skip-postpone-break">Allow Skip Break (in notification)</label>
                 <input type="checkbox" id="allow-skip-postpone-break"
                                        class="form-control checkbox" ng-model="config.allowSkipBreak"/>
               </div>
               <div class="form-group" ng-show="config.notificationType === 'F' && !isFirefox">
-                <label for="allow-skip-postpone-break">Allow Postpone Break</label>
+                <label for="allow-skip-postpone-break">Allow Postpone Break(in notification)</label>
                 <input type="checkbox" id="allow-skip-postpone-break"
                                        class="form-control checkbox" ng-model="config.allowPostponeBreak"/>
               </div>
