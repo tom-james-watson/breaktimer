@@ -10,7 +10,7 @@ var isFirefox = navigator.userAgent.indexOf("Firefox") > -1
 
 var defaultConfig = {
   frequency: 28,
-  length: 2,
+  length: 120,
   postpone: 3,
   notificationType: 'F',
   workingHoursFrom: '09:00',

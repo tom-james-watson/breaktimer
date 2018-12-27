@@ -62,7 +62,7 @@ angular.module('BreakTime', [])
 
       var working = moment().add(
         chrome.extension.getBackgroundPage().config.length,
-        'minutes'
+        'seconds'
       );
 
       $scope.toggleBreaksOn = function() {
@@ -206,7 +206,7 @@ angular.module('BreakTime', [])
       $scope.backgroundColor = ConfigService.config.backgroundColor;
       $scope.textColor = ConfigService.config.textColor;
       $scope.allowEndBreak = ConfigService.config.allowEndBreak;
-      var breakEnd = moment().add(ConfigService.config.length, 'minutes');
+      var breakEnd = moment().add(ConfigService.config.length, 'seconds');
 
       $scope.skip = function() {
         chrome.runtime.sendMessage({event: "endBreak"});
