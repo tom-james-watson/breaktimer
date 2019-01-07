@@ -60,7 +60,8 @@ var defaultConfig = {
   allowEndBreak: true,
   allowSkipBreak: true,
   allowPostponeBreak: true,
-  allowNotifications: true
+  allowNotifications: true,
+  allowIconTimeToBreak: false
 };
 
 // Grab config from local storage mergded with defaultConfig
@@ -274,10 +275,12 @@ function startBreak() {
 }
 
 function endBreak() {
+  if (config.allowIconTimeToBreak) {
   restIndicatorLeft = Math.floor(config.frequency);
    chrome.browserAction.setBadgeText({
      text: restIndicatorLeft.toString()
    });
+  }
   chrome.windows.remove(breakId)
 }
 
@@ -332,27 +335,29 @@ function checkIdleMinutes() {
 }
 
 function checkTimeStayMinutes() {
-  // Check if indicator icon is greater then one minute
-  console.log("extension test");
-  if (typeof(restIndicatorLeft) === 'undefined') {
-    restIndicatorStart = moment();
-    restIndicatorLeft = Number(Math.floor(config.frequency) - 1);
-    restIndicatorPrecise = restIndicatorStart.clone().add(restIndicatorLeft, 'minutes')
-  } else {
-      restIndicatorLeft = restIndicatorLeft-1
-  }
-  console.log(restIndicatorLeft);
-  chrome.browserAction.setBadgeText({
-    text: restIndicatorLeft.toString()
-  });
-  if (restIndicatorLeft < 0){
-    chrome.browserAction.setBadgeBackgroundColor({
-      color: "#F00"
+  if (config.allowIconTimeToBreak) {
+    // Check if indicator icon is greater then one minute
+    console.log("extension test");
+    if (typeof(restIndicatorLeft) === 'undefined') {
+      restIndicatorStart = moment();
+      restIndicatorLeft = Number(Math.floor(config.frequency) - 1);
+      restIndicatorPrecise = restIndicatorStart.clone().add(restIndicatorLeft, 'minutes')
+    } else {
+      restIndicatorLeft = restIndicatorLeft - 1
+    }
+    console.log(restIndicatorLeft);
+    chrome.browserAction.setBadgeText({
+      text: restIndicatorLeft.toString()
     });
-  } else {
-    chrome.browserAction.setBadgeBackgroundColor({
-      color: "#008000"
-    });
+    if (restIndicatorLeft < -1) {
+      chrome.browserAction.setBadgeBackgroundColor({
+        color: "#F00"
+      });
+    } else {
+      chrome.browserAction.setBadgeBackgroundColor({
+        color: "#008000"
+      });
+    }
   }
 }
 
