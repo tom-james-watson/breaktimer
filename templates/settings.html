@@ -107,6 +107,11 @@ body {
                 <input type="text" id="break-message" class="form-control"
                                                       ng-model="config.breakMessage"/>
               </div>
+              <div class="form-group" ng-show="config.notificationType === 'F'">
+                <label for="allow-minutes-remaining-in-icon">Show Minutes Remaining To The Next Break In Extension Icon</label>
+                <input type="checkbox" id="allow-minutes-remaining-in-icon"
+                                       class="form-control checkbox" ng-model="config.allowIconTimeToBreak"/>
+              </div>
             </div>
           </div>
           <div class="row">

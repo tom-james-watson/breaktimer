@@ -349,6 +349,10 @@ function checkTimeStayMinutes() {
     chrome.browserAction.setBadgeBackgroundColor({
       color: "#F00"
     });
+  } else {
+    chrome.browserAction.setBadgeBackgroundColor({
+      color: "#008000"
+    });
   }
 }
 
