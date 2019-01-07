@@ -4,6 +4,9 @@ var breakId;
 var config = {};
 var idleState = 'active';
 var idleStart;
+var restIndicatorStart;
+var restIndicatorLeft;
+var restIndicatorPrecise;
 var alarmName = 'breakAlarm';
 var fullscreenTimeout;
 var isFirefox = navigator.userAgent.indexOf("Firefox") > -1
@@ -225,20 +228,23 @@ function getWorkingDayEnabled(day) {
   return workingDayEnabled;
 }
 
-function handleAlarm() {
-  if (checkOutsideWorkingHours()) {
-    createAlarm();
-  } else if (config.idleResetEnabled &&
-    ['idle', 'locked'].indexOf(idleState) > -1 &&
-    checkIdleMinutes()) {
-    // Prevent breaks when we've been idle for more than
-    // config.idleResetMinutes minutes
-    createAlarm();
+function handleAlarm(alarm) {
+  if (alarm.name === "1min") {
+    checkTimeStayMinutes();
   } else {
-    if (config.notificationType === 'N') {
-      createNotification();
-    } else if (config.notificationType === 'F') {
-      createFullscreenNotification();
+    if (checkOutsideWorkingHours()) {
+      createAlarm();
+    } else if (config.idleResetEnabled && ['idle', 'locked'].indexOf(idleState) > -1 &&
+      checkIdleMinutes()) {
+      // Prevent breaks when we've been idle for more than
+      // config.idleResetMinutes minutes
+      createAlarm();
+    } else {
+      if (config.notificationType === 'N') {
+        createNotification();
+      } else if (config.notificationType === 'F') {
+        createFullscreenNotification();
+      }
     }
   }
 }
@@ -268,6 +274,10 @@ function startBreak() {
 }
 
 function endBreak() {
+  restIndicatorLeft = Math.floor(config.frequency);
+   chrome.browserAction.setBadgeText({
+     text: restIndicatorLeft.toString()
+   });
   chrome.windows.remove(breakId)
 }
 
@@ -320,6 +330,34 @@ function checkIdleMinutes() {
     return false;
   }
 }
+
+function checkTimeStayMinutes() {
+  // Check if indicator icon is greater then one minute
+  console.log("extension test");
+  if (typeof(restIndicatorLeft) === 'undefined') {
+    restIndicatorStart = moment();
+    restIndicatorLeft = Number(Math.floor(config.frequency) - 1);
+    restIndicatorPrecise = restIndicatorStart.clone().add(restIndicatorLeft, 'minutes')
+  } else {
+      restIndicatorLeft = restIndicatorLeft-1
+  }
+  console.log(restIndicatorLeft);
+  chrome.browserAction.setBadgeText({
+    text: restIndicatorLeft.toString()
+  });
+  if (restIndicatorLeft < 0){
+    chrome.browserAction.setBadgeBackgroundColor({
+      color: "#F00"
+    });
+  }
+}
+
+chrome.alarms.create("1min", {
+  delayInMinutes: 1,
+  periodInMinutes: 1
+});
+
+
 
 // Handle user state idle change
 chrome.idle.onStateChanged.addListener(function (newState) {
