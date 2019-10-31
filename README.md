@@ -1,8 +1,14 @@
-# Break Timer
+# Break Timer [DEPRECATED]
+
+**This extension has now been deprecated in favour of the standalone desktop application:**
+
+**https://github.com/tom-james-watson/breaktimer-app**
+
+---
 
 [Chrome extension](https://chrome.google.com/webstore/detail/break-timer/hklkdbpicdmlpoiellngedpejjkmapei)
 
-[Firefox addon](https://addons.mozilla.org/en-US/firefox/addon/break-timer-app/)
+~~[Firefox addon]~~ [Removed by Mozilla]
 
 Break Timer allows you to set up customizable breaks and will remind you to take them. Taking breaks whilst working or studying is crucial in preventing RSI, eye-strain and tiredness.
 
